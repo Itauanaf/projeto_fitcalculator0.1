@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Macronutrientes - FitCalculator</title>
+    <meta name="description" content="Calcule suas necessidades diárias de proteínas, carboidratos e gorduras.">
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Ícone -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon02.png">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="calculator.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="bg-surface-color" role="banner">
+        <div class="container">
+            <nav class="navbar" aria-label="Navegação principal">
+                <!-- Logo -->
+                <div class="nav-brand">
+                    <a href="index.html" id="logo" aria-label="FitCalculator - Página inicial">
+                        <img src="assets/fit02.png" alt="Logo FitCalculator" width="150" height="40">
+                    </a>
+                </div>
+
+                <!-- Menu Toggle Mobile -->
+                <button class="menu-toggle" id="menu-toggle" aria-label="Menu de navegação" aria-expanded="false"
+                    aria-controls="menu">
+                    <span class="menu-toggle__line"></span>
+                    <span class="menu-toggle__line"></span>
+                    <span class="menu-toggle__line"></span>
+                </button>
+
+                <!-- Menu de Navegação -->
+                <ul id="menu" class="nav-menu" role="menubar">
+                    <li role="none">
+                        <a href="index.html" class="nav-link" role="menuitem">
+                            Início
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="imc.html" class="nav-link" role="menuitem">
+                            Calculadora IMC
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="macros.html" class="nav-link active" role="menuitem">
+                            Calculadora de Macronutrientes
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="tdee.html" class="nav-link" role="menuitem">
+                            Calculadora TDEE
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Página da Calculadora de Macronutrientes -->
+        <section class="calculator-page">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Calculadora de Macronutrientes</h1>
+                    <p class="page-description">
+                        Calcule suas necessidades diárias de proteínas, carboidratos e gorduras
+                    </p>
+                </div>
+
+                <div class="calculator-content">
+                    <!-- Calculadora Macronutrientes -->
+                    <div class="calculator-card">
+                        <form id="macros-form" class="calculator-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="macros-weight">Peso (kg)</label>
+                                    <input type="number" id="macros-weight" name="weight" min="30" max="300"
+                                        step="0.1" placeholder="Ex: 70.5" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="activity-level">Nível de Atividade</label>
+                                    <select id="activity-level" name="activityLevel" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="sedentary">Sedentário</option>
+                                        <option value="light">Leve (1-3x/semana)</option>
+                                        <option value="moderate">Moderado (3-5x/semana)</option>
+                                        <option value="active">Ativo (6-7x/semana)</option>
+                                        <option value="very-active">Muito Ativo (2x/dia)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="goal">Objetivo</label>
+                                <select id="goal" name="goal" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="loss">Perda de Gordura</option>
+                                    <option value="maintain">Manutenção</option>
+                                    <option value="gain">Ganho de Massa</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="diet-type">Tipo de Dieta</label>
+                                <select id="diet-type" name="dietType">
+                                    <option value="balanced">Balanceada</option>
+                                    <option value="low-carb">Low Carb</option>
+                                    <option value="high-protein">Alta Proteína</option>
+                                    <option value="keto">Cetogênica</option>
+                                </select>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="calculate-btn">
+                                    Calcular Macronutrientes
+                                </button>
+                                <button type="button" class="clear-btn">
+                                    Limpar
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="macros-result" class="result-container hidden">
+                            <div class="result-header">
+                                <h3>Resultado dos Macronutrientes</h3>
+                                <button class="save-btn" data-type="macros">
+                                    Salvar
+                                </button>
+                            </div>
+                            <div class="result-content">
+                                <div class="total-calories">
+                                    <div class="calories-value" id="total-calories">--</div>
+                                    <div class="calories-label">calorias/dia</div>
+                                </div>
+
+                                <div class="macros-grid">
+                                    <div class="macro-card">
+                                        <div class="macro-icon"><img src="assets/proteina.png" alt="Proteína"></div>
+                                        <div class="macro-name">Proteína</div>
+                                        <div class="macro-value" id="protein-grams">--</div>
+                                        <div class="macro-unit">gramas</div>
+                                        <div class="macro-percentage" id="protein-percentage">--%</div>
+                                    </div>
+
+                                    <div class="macro-card">
+                                        <div class="macro-icon"><img src="assets/carboidrato.png" alt="Carboidratos"></div>
+                                        <div class="macro-name">Carboidratos</div>
+                                        <div class="macro-value" id="carbs-grams">--</div>
+                                        <div class="macro-unit">gramas</div>
+                                        <div class="macro-percentage" id="carbs-percentage">--%</div>
+                                    </div>
+
+                                    <div class="macro-card">
+                                        <div class="macro-icon"><img src="assets/gordura.png" alt="Gorduras"></div>
+                                        <div class="macro-name">Gorduras</div>
+                                        <div class="macro-value" id="fats-grams">--</div>
+                                        <div class="macro-unit">gramas</div>
+                                        <div class="macro-percentage" id="fats-percentage">--%</div>
+                                    </div>
+                                </div>
+
+                                <div class="result-actions">
+                                    <button class="action-btn share-btn">Compartilhar</button>
+                                    <button class="action-btn history-btn">Ver Histórico</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações sobre Macronutrientes -->
+                    <div class="calculator-info">
+                        <h2>🥩 O que são Macronutrientes?</h2>
+                        <p>
+                            <strong>Macronutrientes</strong> são os nutrientes que nosso corpo precisa em 
+                            grandes quantidades para funcionar corretamente. Eles são divididos em três categorias:
+                        </p>
+
+                        <div class="macros-info">
+                            <div class="macro-info-card protein">
+                                <h3>🍗 Proteínas</h3>
+                                <p><strong>Função:</strong> Construção e reparação de tecidos, músculos, hormônios.</p>
+                                <p><strong>Fontes:</strong> Carnes, ovos, leguminosas, laticínios.</p>
+                                <p><strong>Calorias:</strong> 4 kcal por grama</p>
+                            </div>
+
+                            <div class="macro-info-card carbs">
+                                <h3>🍚 Carboidratos</h3>
+                                <p><strong>Função:</strong> Principal fonte de energia para o corpo e cérebro.</p>
+                                <p><strong>Fontes:</strong> Arroz, batata, pães, frutas, massas.</p>
+                                <p><strong>Calorias:</strong> 4 kcal por grama</p>
+                            </div>
+
+                            <div class="macro-info-card fats">
+                                <h3>🥑 Gorduras</h3>
+                                <p><strong>Função:</strong> Absorção de vitaminas, proteção de órgãos, hormônios.</p>
+                                <p><strong>Fontes:</strong> Abacate, azeite, castanhas, peixes gordurosos.</p>
+                                <p><strong>Calorias:</strong> 9 kcal por grama</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>📊 Distribuição Recomendada</h3>
+                            <p>A distribuição ideal varia conforme seu objetivo:</p>
+                            <ul>
+                                <li><strong>Manutenção:</strong> 40% Carbs, 30% Proteínas, 30% Gorduras</li>
+                                <li><strong>Perda de peso:</strong> Menos carbs, mais proteínas</li>
+                                <li><strong>Ganho muscular:</strong> Mais proteínas e carbs</li>
+                                <li><strong>Low Carb/Keto:</strong> Poucos carbs, muitas gorduras</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-card warning">
+                            <h3>⚠️ Lembre-se</h3>
+                            <p>
+                                Estas são <strong>recomendações gerais</strong>. Necessidades individuais 
+                                variam conforme:
+                            </p>
+                            <ul>
+                                <li>Metabolismo</li>
+                                <li>Nível de atividade</li>
+                                <li>Idade e sexo</li>
+                                <li>Condições de saúde</li>
+                            </ul>
+                            <p class="disclaimer">
+                                Para uma dieta personalizada, consulte um nutricionista.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="assets/fit02.png" alt="FitCalculator" class="footer-logo" width="130">
+                    <p class="footer-description">
+                        Ferramentas gratuitas para ajudar você a alcançar seus objetivos de saúde.
+                    </p>
+                </div>
+                <div class="footer-disclaimer">
+                    <p class="disclaimer-text">
+                        <strong>Aviso:</strong> Esta calculadora fornece estimativas. 
+                        Consulte um profissional de saúde para orientações personalizadas.
+                    </p>
+                    <p class="copyright">
+                        &copy; <span id="current-year"></span> FitCalculator. Todos os direitos reservados.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="calculator.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
