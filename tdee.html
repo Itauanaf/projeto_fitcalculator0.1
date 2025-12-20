@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora TDEE - FitCalculator</title>
+    <meta name="description" content="Calcule seu gasto energético total diário (TDEE) para ajustar sua dieta.">
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Ícone -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon02.png">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="calculator.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="bg-surface-color" role="banner">
+        <div class="container">
+            <nav class="navbar" aria-label="Navegação principal">
+                <!-- Logo -->
+                <div class="nav-brand">
+                    <a href="index.html" id="logo" aria-label="FitCalculator - Página inicial">
+                        <img src="assets/fit02.png" alt="Logo FitCalculator" width="150" height="40">
+                    </a>
+                </div>
+
+                <!-- Menu Toggle Mobile -->
+                <button class="menu-toggle" id="menu-toggle" aria-label="Menu de navegação" aria-expanded="false"
+                    aria-controls="menu">
+                    <span class="menu-toggle__line"></span>
+                    <span class="menu-toggle__line"></span>
+                    <span class="menu-toggle__line"></span>
+                </button>
+
+                <!-- Menu de Navegação -->
+                <ul id="menu" class="nav-menu" role="menubar">
+                    <li role="none">
+                        <a href="index.html" class="nav-link" role="menuitem">
+                            Início
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="imc.html" class="nav-link" role="menuitem">
+                            Calculadora IMC
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="macros.html" class="nav-link" role="menuitem">
+                            Calculadora de Macronutrientes
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="tdee.html" class="nav-link active" role="menuitem">
+                            Calculadora TDEE
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Página da Calculadora TDEE -->
+        <section class="calculator-page">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Calculadora de TDEE</h1>
+                    <p class="page-description">
+                        Calcule seu gasto energético total diário para ajustar sua dieta
+                    </p>
+                </div>
+
+                <div class="calculator-content">
+                    <!-- Calculadora TDEE -->
+                    <div class="calculator-card">
+                        <form id="tdee-form" class="calculator-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="tdee-age">Idade</label>
+                                    <input type="number" id="tdee-age" name="age" min="15" max="100"
+                                        placeholder="Ex: 30" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="gender">Gênero</label>
+                                    <select id="gender" name="gender" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="male">Masculino</option>
+                                        <option value="female">Feminino</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="tdee-weight">Peso (kg)</label>
+                                    <input type="number" id="tdee-weight" name="weight" min="30" max="300"
+                                        step="0.1" placeholder="Ex: 70.5" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="tdee-height">Altura (cm)</label>
+                                    <input type="number" id="tdee-height" name="height" min="100" max="250"
+                                        placeholder="Ex: 175" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tdee-activity-level">Nível de Atividade</label>
+                                <select id="tdee-activity-level" name="activityLevel" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="sedentary">Sedentário (pouco ou nenhum exercício)</option>
+                                    <option value="light">Levemente Ativo (exercício leve 1-3 dias/semana)</option>
+                                    <option value="moderate">Moderadamente Ativo (exercício moderado 3-5 dias/semana)</option>
+                                    <option value="active">Muito Ativo (exercício intenso 6-7 dias/semana)</option>
+                                    <option value="very-active">Extremamente Ativo (exercício muito intenso, trabalho físico)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="calculate-btn">
+                                    Calcular TDEE
+                                </button>
+                                <button type="button" class="clear-btn">
+                                    Limpar
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="tdee-result" class="result-container hidden">
+                            <div class="result-header">
+                                <h3>Resultado do TDEE</h3>
+                                <button class="save-btn" data-type="tdee">
+                                    Salvar
+                                </button>
+                            </div>
+                            <div class="result-content">
+                                <div class="tdee-results">
+                                    <div class="tdee-item">
+                                        <div class="tdee-label">Taxa Metabólica Basal (BMR)</div>
+                                        <div class="tdee-value">
+                                            <span id="bmr-value">--</span>
+                                            <span class="tdee-unit">calorias/dia</span>
+                                        </div>
+                                        <div class="tdee-description">Calorias que seu corpo queima em repouso</div>
+                                    </div>
+
+                                    <div class="tdee-item highlight">
+                                        <div class="tdee-label">Gasto Energético Total (TDEE)</div>
+                                        <div class="tdee-value">
+                                            <span id="tdee-value">--</span>
+                                            <span class="tdee-unit">calorias/dia</span>
+                                        </div>
+                                        <div class="tdee-description">Calorias totais queimadas considerando sua atividade</div>
+                                    </div>
+                                </div>
+
+                                <div class="calorie-targets">
+                                    <h4>Metas Calóricas Diárias</h4>
+                                    <div class="targets-grid">
+                                        <div class="target-card loss">
+                                            <div class="target-label">Perda de Peso</div>
+                                            <div class="target-value" id="loss-calories">--</div>
+                                            <div class="target-unit">calorias</div>
+                                            <div class="target-description">Déficit de 20%</div>
+                                        </div>
+
+                                        <div class="target-card maintain">
+                                            <div class="target-label">Manutenção</div>
+                                            <div class="target-value" id="maintain-calories">--</div>
+                                            <div class="target-unit">calorias</div>
+                                            <div class="target-description">TDEE atual</div>
+                                        </div>
+
+                                        <div class="target-card gain">
+                                            <div class="target-label">Ganho de Massa</div>
+                                            <div class="target-value" id="gain-calories">--</div>
+                                            <div class="target-unit">calorias</div>
+                                            <div class="target-description">Superávit de 20%</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="result-actions">
+                                    <button class="action-btn share-btn">Compartilhar</button>
+                                    <button class="action-btn history-btn">Ver Histórico</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações sobre TDEE -->
+                    <div class="calculator-info">
+                        <h2>🔥 O que é TDEE?</h2>
+                        <p>
+                            <strong>TDEE (Total Daily Energy Expenditure)</strong> é o total de calorias 
+                            que seu corpo queima em um dia, considerando:
+                        </p>
+
+                        <div class="tdee-components">
+                            <div class="component">
+                                <h3>⚡ Taxa Metabólica Basal (BMR)</h3>
+                                <p>Calorias queimadas em repouso completo (para funções vitais como respiração, batimento cardíaco).</p>
+                                <p><strong>Representa 60-75% do TDEE</strong></p>
+                            </div>
+
+                            <div class="component">
+                                <h3>🏃‍♂️ Efeito Térmico da Atividade (TEA)</h3>
+                                <p>Calorias queimadas durante exercícios e atividades físicas.</p>
+                                <p><strong>Representa 15-30% do TDEE</strong></p>
+                            </div>
+
+                            <div class="component">
+                                <h3>🍽️ Efeito Térmico dos Alimentos (TEF)</h3>
+                                <p>Calorias queimadas para digerir, absorver e processar os alimentos.</p>
+                                <p><strong>Representa 10% do TDEE</strong></p>
+                            </div>
+                        </div>
+
+                        <h3>📈 Multiplicadores de Atividade</h3>
+                        <div class="info-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nível</th>
+                                        <th>Descrição</th>
+                                        <th>Multiplicador</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Sedentário</td>
+                                        <td>Pouco ou nenhum exercício</td>
+                                        <td>BMR × 1.2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Levemente Ativo</td>
+                                        <td>Exercício leve 1-3x/semana</td>
+                                        <td>BMR × 1.375</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Moderadamente Ativo</td>
+                                        <td>Exercício moderado 3-5x/semana</td>
+                                        <td>BMR × 1.55</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Muito Ativo</td>
+                                        <td>Exercício intenso 6-7x/semana</td>
+                                        <td>BMR × 1.725</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Extremamente Ativo</td>
+                                        <td>Exercício muito intenso + trabalho físico</td>
+                                        <td>BMR × 1.9</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>🎯 Como usar seu TDEE</h3>
+                            <ul>
+                                <li><strong>Perder peso:</strong> Consuma 15-20% menos que seu TDEE</li>
+                                <li><strong>Manter peso:</strong> Consuma seu TDEE exato</li>
+                                <li><strong>Ganhar massa:</strong> Consuma 10-20% mais que seu TDEE</li>
+                            </ul>
+                            <p>Exemplo: Se seu TDEE é 2500 calorias:</p>
+                            <ul>
+                                <li>Perda: 2000-2125 calorias/dia</li>
+                                <li>Manutenção: 2500 calorias/dia</li>
+                                <li>Ganho: 2750-3000 calorias/dia</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-card warning">
+                            <h3>⚠️ Considerações importantes</h3>
+                            <p>Seu TDEE <strong>não é fixo</strong> e pode mudar devido a:</p>
+                            <ul>
+                                <li>Mudanças na composição corporal</li>
+                                <li>Envelhecimento</li>
+                                <li>Alterações hormonais</li>
+                                <li>Ajustes no nível de atividade</li>
+                            </ul>
+                            <p class="disclaimer">
+                                Recalcule seu TDEE a cada 4-6 semanas ou após mudanças significativas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="assets/fit02.png" alt="FitCalculator" class="footer-logo" width="130">
+                    <p class="footer-description">
+                        Ferramentas gratuitas para ajudar você a alcançar seus objetivos de saúde.
+                    </p>
+                </div>
+                <div class="footer-disclaimer">
+                    <p class="disclaimer-text">
+                        <strong>Aviso:</strong> Esta calculadora fornece estimativas. 
+                        Consulte um profissional de saúde para orientações personalizadas.
+                    </p>
+                    <p class="copyright">
+                        &copy; <span id="current-year"></span> FitCalculator. Todos os direitos reservados.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="calculator.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
