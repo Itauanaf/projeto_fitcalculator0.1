@@ -1,0 +1,917 @@
+/* calculator.css - CSS das calculadoras */
+
+/* Variáveis específicas para calculadoras */
+:root {
+  /* Cores para os resultados */
+  --imc-underweight: #60a5fa;      /* Azul */
+  --imc-normal: #34d399;           /* Verde */
+  --imc-overweight: #fbbf24;       /* Amarelo */
+  --imc-obesity1: #f87171;         /* Vermelho claro */
+  --imc-obesity2: #dc2626;         /* Vermelho */
+  --imc-obesity3: #7f1d1d;         /* Vermelho escuro */
+  
+  /* Cores para macros */
+  --protein-color: #3b82f6;        /* Azul - Proteínas */
+  --carbs-color: #10b981;          /* Verde - Carboidratos */
+  --fats-color: #f59e0b;           /* Amarelo - Gorduras */
+  
+  /* Cores para TDEE */
+  --loss-color: #ef4444;           /* Vermelho - Perda */
+  --maintain-color: #10b981;       /* Verde - Manutenção */
+  --gain-color: #3b82f6;           /* Azul - Ganho */
+}
+
+/* Seção de Calculadoras */
+.calculator-section {
+  padding: var(--spacing-xl) var(--spacing-md);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Tabs (Abas) */
+.calculator-tabs {
+  background: var(--background-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.tabs-header {
+  display: flex;
+  background: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs-header::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 200px;
+  padding: 1.25rem 1.5rem;
+  background: none;
+  border: none;
+  font: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-color-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  white-space: nowrap;
+  border-right: 1px solid var(--border-color);
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn:hover {
+  color: var(--brand-color);
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.tab-btn.active {
+  color: var(--brand-color);
+  background: var(--background-color);
+  box-shadow: inset 0 -2px 0 var(--brand-color);
+}
+
+/* Conteúdo das abas */
+.tabs-content {
+  position: relative;
+}
+
+.tab-content {
+  display: none;
+  padding: 2.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Card da calculadora */
+.calculator-card {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.calculator-title {
+  font: var(--text-lg);
+  color: var(--text-color-primary);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.calculator-description {
+  color: var(--text-color-tertiary);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Formulários */
+.calculator-form {
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color-primary);
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font: var(--text-base);
+  color: var(--text-color-primary);
+  background: var(--background-color);
+  transition: all var(--transition-base);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--brand-color);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+  border-color: var(--brand-color);
+}
+
+.input-hint {
+  font-size: 0.875rem;
+  color: var(--text-color-tertiary);
+  margin-top: 0.25rem;
+  opacity: 0.8;
+}
+
+/* Botões do formulário */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.calculate-btn,
+.clear-btn {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: 2px solid transparent;
+  font-size: 1rem;
+}
+
+.calculate-btn {
+  background: var(--brand-color);
+  color: white;
+}
+
+.calculate-btn:hover {
+  background: var(--brand-color-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.clear-btn {
+  background: var(--surface-color);
+  color: var(--text-color-secondary);
+  border-color: var(--border-color);
+}
+
+.clear-btn:hover {
+  background: var(--surface-color-dark);
+  border-color: var(--text-color-tertiary);
+}
+
+/* Container de resultados */
+.result-container {
+  background: var(--surface-color);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  border: 1px solid var(--border-color);
+  animation: slideUp 0.3s ease;
+  margin-top: 2rem;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-container.hidden {
+  display: none;
+}
+
+/* Header do resultado */
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.result-header h3 {
+  font: var(--text-md);
+  color: var(--text-color-primary);
+  margin: 0;
+}
+
+.save-btn {
+  padding: 0.5rem 1rem;
+  background: var(--brand-color-light);
+  color: var(--brand-color);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.save-btn:hover {
+  background: var(--brand-color);
+  color: white;
+}
+
+/* Conteúdo do resultado */
+.result-content {
+  text-align: center;
+}
+
+/* Resultado IMC */
+.result-value {
+  margin-bottom: 1.5rem;
+}
+
+.result-value .value {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text-color-primary);
+  line-height: 1;
+}
+
+.result-value .unit {
+  font-size: 1.25rem;
+  color: var(--text-color-tertiary);
+  margin-left: 0.5rem;
+  font-weight: 400;
+}
+
+.result-classification {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--brand-color);
+  margin-bottom: 0.5rem;
+}
+
+.result-range {
+  color: var(--text-color-tertiary);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+/* Barra de progresso IMC */
+.progress-container {
+  margin: 2.5rem 0;
+}
+
+.progress-bar {
+  height: 16px;
+  background: linear-gradient(90deg, 
+    var(--imc-underweight) 0%,    /* Azul - abaixo peso */
+    var(--imc-normal) 25%,        /* Verde - normal */
+    var(--imc-overweight) 50%,    /* Amarelo - sobrepeso */
+    var(--imc-obesity1) 75%,      /* Vermelho - obesidade I */
+    var(--imc-obesity2) 100%      /* Vermelho escuro - obesidade II+ */
+  );
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.3);
+  border-right: 3px solid var(--text-color-primary);
+  transition: width 1s ease-out;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-color-tertiary);
+  font-weight: 500;
+}
+
+/* Resultado Macros */
+.total-calories {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--brand-color) 0%, var(--brand-color-hover) 100%);
+  border-radius: var(--border-radius);
+  color: white;
+}
+
+.calories-value {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.calories-label {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+.macros-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .macros-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.macro-card {
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.macro-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.macro-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}
+
+.macro-name {
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.macro-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.macro-unit {
+  color: var(--text-color-tertiary);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.macro-percentage {
+  color: var(--text-color-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  background: var(--surface-color);
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Cores específicas para cada macro */
+.macro-card:nth-child(1) .macro-value {
+  color: var(--protein-color);
+}
+.macro-card:nth-child(1) .macro-percentage {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--protein-color);
+}
+
+.macro-card:nth-child(2) .macro-value {
+  color: var(--carbs-color);
+}
+.macro-card:nth-child(2) .macro-percentage {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--carbs-color);
+}
+
+.macro-card:nth-child(3) .macro-value {
+  color: var(--fats-color);
+}
+.macro-card:nth-child(3) .macro-percentage {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--fats-color);
+}
+
+/* Resultado TDEE */
+.tdee-results {
+  margin-bottom: 2.5rem;
+}
+
+.tdee-item {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: var(--surface-color);
+  border-radius: var(--border-radius-sm);
+  border-left: 4px solid var(--border-color);
+}
+
+.tdee-item.highlight {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(34, 139, 34, 0.1) 100%);
+  border-left-color: var(--brand-color);
+}
+
+.tdee-label {
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.tdee-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-color-primary);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.tdee-unit {
+  font-size: 1.1rem;
+  color: var(--text-color-tertiary);
+  margin-left: 0.5rem;
+  font-weight: 400;
+}
+
+.tdee-description {
+  color: var(--text-color-tertiary);
+  font-size: 0.95rem;
+}
+
+/* Metas calóricas TDEE */
+.calorie-targets {
+  margin: 2.5rem 0;
+}
+
+.calorie-targets h4 {
+  font: var(--text-md);
+  color: var(--text-color-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.targets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .targets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.target-card {
+  padding: 1.5rem;
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+  border: 2px solid transparent;
+  transition: all var(--transition-base);
+}
+
+.target-card.loss {
+  border-color: var(--loss-color);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.target-card.maintain {
+  border-color: var(--maintain-color);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.target-card.gain {
+  border-color: var(--gain-color);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.target-label {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.target-card.loss .target-label {
+  color: var(--loss-color);
+}
+
+.target-card.maintain .target-label {
+  color: var(--maintain-color);
+}
+
+.target-card.gain .target-label {
+  color: var(--gain-color);
+}
+
+.target-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--text-color-primary);
+}
+
+.target-unit {
+  color: var(--text-color-tertiary);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.target-description {
+  color: var(--text-color-secondary);
+  font-size: 0.9rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Ações do resultado */
+.result-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.action-btn {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--background-color);
+  color: var(--text-color-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.action-btn:hover {
+  border-color: var(--brand-color);
+  color: var(--brand-color);
+  background: var(--brand-color-light);
+}
+
+/* Estados de loading e erro */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--brand-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Mensagens de erro e sucesso */
+.error-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ef4444;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.success-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #10b981;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Utilitários */
+.hidden {
+  display: none !important;
+}
+
+/* ====== RESPONSIVIDADE DAS CALCULADORAS ====== */
+
+@media (max-width: 768px) {
+  /* Container principal */
+  .calculator-section {
+    padding: 1.5rem 0.75rem;
+    margin-top: 0;
+  }
+  
+  /* Tabs header */
+  .tabs-header {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  
+  .tab-btn {
+    min-width: 140px;
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-right: 1px solid var(--border-color);
+  }
+  
+  /* Conteúdo da calculadora */
+  .tab-content {
+    padding: 1.5rem 0.75rem;
+  }
+  
+  .calculator-card {
+    width: 100%;
+  }
+  
+  .calculator-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .calculator-description {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Formulários */
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.375rem;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.75rem 0.875rem;
+    font-size: 1rem;
+  }
+  
+  .input-hint {
+    font-size: 0.8rem;
+  }
+  
+  /* Botões */
+  .form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  
+  .calculate-btn,
+  .clear-btn {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+  
+  /* Resultados */
+  .result-container {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .result-header {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .result-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .save-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  /* IMC Result */
+  .result-value .value {
+    font-size: 2.5rem;
+  }
+  
+  .result-classification {
+    font-size: 1.25rem;
+  }
+  
+  .result-range {
+    font-size: 1rem;
+  }
+  
+  .progress-container {
+    margin: 1.5rem 0;
+  }
+  
+  .progress-bar {
+    height: 14px;
+  }
+  
+  .progress-labels {
+    font-size: 0.7rem;
+  }
+  
+  /* Macros Result */
+  .macros-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .macro-card {
+    padding: 1.25rem 1rem;
+  }
+  
+  .macro-icon {
+    font-size: 2rem;
+  }
+  
+  .macro-value {
+    font-size: 1.75rem;
+  }
+  
+  /* TDEE Result */
+  .targets-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tdee-value {
+    font-size: 1.75rem;
+  }
+  
+  /* Botões de ação */
+  .result-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .action-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 375px) {
+  .calculator-section {
+    padding: 1rem 0.5rem;
+  }
+  
+  .tab-btn {
+    min-width: 120px;
+    padding: 0.75rem 0.875rem;
+    font-size: 0.85rem;
+  }
+  
+  .calculator-title {
+    font-size: 1.35rem;
+  }
+  
+  .result-value .value {
+    font-size: 2rem;
+  }
+  
+  .macro-card {
+    padding: 1rem 0.75rem;
+  }
+  
+  .tdee-item {
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* Correção para viewport no mobile */
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+  
+  body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  /* Prevenir scroll horizontal */
+  .container, 
+  .calculator-tabs,
+  .tabs-header {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+/* Ajuste para Safari iOS */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    .hero {
+      padding-top: max(env(safe-area-inset-top), 2rem);
+    }
+    
+    .calculator-section {
+      padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
+    }
+  }
+}
