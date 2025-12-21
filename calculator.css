@@ -103,7 +103,7 @@
 
 /* Card da calculadora */
 .calculator-card {
-  max-width: 600px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -688,6 +688,134 @@
   display: none !important;
 }
 
+/* ====== LAYOUT VERTICAL PARA PÁGINAS DE CALCULADORAS ====== */
+/* MODIFICAÇÕES PARA LAYOUT VERTICAL */
+
+/* Container principal - MUDADO PARA FLEX VERTICAL */
+.calculator-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Seções do layout vertical */
+.calculator-section-vertical,
+.info-section-vertical {
+    width: 100%;
+}
+
+/* Container da calculadora - AJUSTADO */
+.calculator-card {
+    max-width: 100%;
+    margin-bottom: 0;
+}
+
+/* Seção de informações - NOVO ESTILO */
+.info-section-vertical {
+    background: var(--background-color);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Títulos da seção de informações */
+.info-section-vertical h2 {
+    font: var(--text-lg);
+    color: var(--text-color-primary);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--brand-color-light);
+}
+
+.info-section-vertical h3 {
+    font: var(--text-md);
+    color: var(--text-color-primary);
+    margin: var(--spacing-lg) 0 var(--spacing-sm);
+}
+
+/* Texto */
+.info-section-vertical p {
+    color: var(--text-color-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Tabela vertical */
+.info-table-vertical {
+    margin: var(--spacing-lg) 0;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.info-table-vertical table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-table-vertical th {
+    background: var(--brand-color-light);
+    color: var(--brand-color);
+    font-weight: 600;
+    padding: var(--spacing-sm);
+    text-align: left;
+}
+
+.info-table-vertical td {
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color-secondary);
+}
+
+.info-table-vertical tr:hover {
+    background: rgba(76, 175, 80, 0.05);
+}
+
+.info-table-vertical tr.normal {
+    background: rgba(52, 211, 153, 0.1);
+}
+
+/* Card de aviso */
+.info-card-vertical.warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+    border-radius: var(--border-radius-sm);
+}
+
+.info-card-vertical.warning h3 {
+    margin-top: 0;
+    color: #d97706;
+}
+
+.info-card-vertical.warning ul {
+    padding-left: var(--spacing-lg);
+    margin: var(--spacing-sm) 0;
+}
+
+.info-card-vertical.warning li {
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-color-secondary);
+}
+
+.info-card-vertical.warning .disclaimer {
+    font-style: italic;
+    color: var(--text-color-tertiary);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid #fde68a;
+}
+
+/* Animações suaves */
+.calculator-content > * {
+    animation: fadeInUp 0.5s ease;
+}
+
 /* ====== RESPONSIVIDADE DAS CALCULADORAS ====== */
 
 @media (max-width: 768px) {
@@ -852,6 +980,28 @@
     width: 100%;
     padding: 0.75rem 1rem;
   }
+  
+  /* Layout vertical - ajustes mobile */
+  .calculator-content {
+    gap: var(--spacing-lg);
+  }
+  
+  .info-section-vertical {
+    padding: var(--spacing-md);
+  }
+  
+  .info-table-vertical {
+    font-size: 0.9rem;
+  }
+  
+  .info-table-vertical th,
+  .info-table-vertical td {
+    padding: var(--spacing-xs);
+  }
+  
+  .info-card-vertical.warning {
+    padding: var(--spacing-sm);
+  }
 }
 
 /* Ajustes para telas muito pequenas */
@@ -880,6 +1030,10 @@
   
   .tdee-item {
     padding: 1rem 0.75rem;
+  }
+  
+  .info-section-vertical {
+    padding: var(--spacing-sm);
   }
 }
 
@@ -914,4 +1068,450 @@
       padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
     }
   }
+}
+
+/* Animações adicionais para layout vertical */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== VERSÃO MINIMALISTA ====== */
+
+/* Layout minimalista */
+.calculator-page.minimalist {
+    padding: 2rem 0;
+    background: var(--background-color);
+}
+
+.calculator-page.minimalist .container {
+    max-width: 500px;
+}
+
+/* Header minimalista */
+.page-header.minimalist {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.page-title.minimalist {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.page-description.minimalist {
+    color: var(--text-color-tertiary);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Conteúdo minimalista */
+.calculator-content.minimalist {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Card minimalista */
+.calculator-card.minimalist {
+    max-width: 100%;
+    background: var(--background-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin: 0;
+}
+
+/* Formulário minimalista */
+.calculator-form.minimalist {
+    margin-bottom: 1.5rem;
+}
+
+.calculator-form.minimalist .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.calculator-form.minimalist label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color-primary);
+    font-size: 0.95rem;
+}
+
+.calculator-form.minimalist input,
+.calculator-form.minimalist select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font: var(--text-base);
+    color: var(--text-color-primary);
+    background: var(--background-color);
+    transition: all 0.2s ease;
+}
+
+.calculator-form.minimalist input:focus,
+.calculator-form.minimalist select:focus {
+    outline: none;
+    border-color: var(--brand-color);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.calculator-form.minimalist .input-hint {
+    font-size: 0.85rem;
+    color: var(--text-color-tertiary);
+    margin-top: 0.25rem;
+    opacity: 0.7;
+}
+
+/* Botões minimalistas */
+.form-actions.minimalist {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.calculate-btn.minimalist,
+.clear-btn.minimalist {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-size: 1rem;
+}
+
+.calculate-btn.minimalist {
+    background: var(--brand-color);
+    color: white;
+}
+
+.calculate-btn.minimalist:hover {
+    background: var(--brand-color-hover);
+    transform: translateY(-1px);
+}
+
+.clear-btn.minimalist {
+    background: var(--surface-color);
+    color: var(--text-color-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.clear-btn.minimalist:hover {
+    background: var(--surface-color-dark);
+}
+
+/* Resultado minimalista */
+.result-container.minimalist {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    animation: fadeIn 0.3s ease;
+    margin-top: 1.5rem;
+}
+
+.result-container.minimalist.hidden {
+    display: none;
+}
+
+/* Header do resultado minimalista */
+.result-header.minimalist {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.result-header.minimalist h3 {
+    font-size: 1.1rem;
+    color: var(--text-color-primary);
+    margin: 0;
+}
+
+.save-btn.minimalist {
+    padding: 0.5rem 1rem;
+    background: var(--brand-color-light);
+    color: var(--brand-color);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.save-btn.minimalist:hover {
+    background: var(--brand-color);
+    color: white;
+}
+
+/* Conteúdo do resultado minimalista */
+.result-content.minimalist {
+    text-align: center;
+}
+
+/* IMC minimalista */
+.result-value.minimalist {
+    margin-bottom: 1rem;
+}
+
+.result-value.minimalist .value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color-primary);
+    line-height: 1;
+}
+
+.result-value.minimalist .unit {
+    font-size: 1rem;
+    color: var(--text-color-tertiary);
+    margin-left: 0.5rem;
+    font-weight: 400;
+}
+
+.result-classification.minimalist {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    display: inline-block;
+}
+
+/* Cores para classificação IMC */
+.result-classification.minimalist.imc-underweight {
+    background: rgba(96, 165, 250, 0.15);
+    color: #3b82f6;
+}
+
+.result-classification.minimalist.imc-normal {
+    background: rgba(52, 211, 153, 0.15);
+    color: #10b981;
+}
+
+.result-classification.minimalist.imc-overweight {
+    background: rgba(251, 191, 36, 0.15);
+    color: #f59e0b;
+}
+
+.result-classification.minimalist.imc-obesity {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.result-range.minimalist {
+    color: var(--text-color-tertiary);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* Barra de progresso minimalista */
+.progress-container.minimalist {
+    margin: 1.5rem 0;
+}
+
+.progress-bar.minimalist {
+    height: 6px;
+    background: linear-gradient(90deg, 
+        var(--imc-underweight) 0%,
+        var(--imc-normal) 25%,
+        var(--imc-overweight) 50%,
+        var(--imc-obesity1) 75%,
+        var(--imc-obesity2) 100%
+    );
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill.minimalist {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: rgba(255, 255, 255, 0.3);
+    border-right: 2px solid var(--text-color-primary);
+    transition: width 0.8s ease-out;
+}
+
+.progress-labels.minimalist {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-color-tertiary);
+    font-weight: 500;
+}
+
+/* Ações minimalistas */
+.result-actions.minimalist {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.action-btn.minimalist {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--background-color);
+    color: var(--text-color-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.action-btn.minimalist:hover {
+    border-color: var(--brand-color);
+    color: var(--brand-color);
+    background: var(--brand-color-light);
+}
+
+/* Info card minimalista */
+.calculator-info.minimalist {
+    background: var(--surface-color);
+    padding: 1.25rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-top: 1.5rem;
+}
+
+.calculator-info.minimalist h2 {
+    font-size: 1.1rem;
+    color: var(--text-color-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.calculator-info.minimalist h3 {
+    font-size: 1rem;
+    color: var(--text-color-primary);
+    margin: 1.5rem 0 0.75rem;
+}
+
+.calculator-info.minimalist p {
+    color: var(--text-color-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+/* Tabela minimalista */
+.info-table.minimalist {
+    overflow-x: auto;
+    margin: 1rem 0;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.info-table.minimalist table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.info-table.minimalist th {
+    background: var(--brand-color-light);
+    color: var(--brand-color);
+    font-weight: 600;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.info-table.minimalist td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color-secondary);
+}
+
+.info-table.minimalist tr.normal {
+    background: rgba(52, 211, 153, 0.1);
+}
+
+/* Info card warning minimalista */
+.info-card.minimalist.warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+}
+
+.info-card.minimalist.warning h3 {
+    margin-top: 0;
+    color: #d97706;
+}
+
+.info-card.minimalist.warning ul {
+    padding-left: 1.5rem;
+    margin: 0.75rem 0;
+}
+
+.info-card.minimalist.warning li {
+    color: var(--text-color-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.info-card.minimalist.warning .disclaimer {
+    font-style: italic;
+    color: var(--text-color-tertiary);
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #fde68a;
+    font-size: 0.9rem;
+}
+
+/* Responsividade minimalista */
+@media (max-width: 768px) {
+    .calculator-page.minimalist {
+        padding: 1.5rem 0;
+    }
+    
+    .calculator-card.minimalist {
+        padding: 1.25rem;
+    }
+    
+    .page-title.minimalist {
+        font-size: 1.5rem;
+    }
+    
+    .result-value.minimalist .value {
+        font-size: 2rem;
+    }
+    
+    .form-actions.minimalist {
+        flex-direction: column;
+    }
+    
+    .result-actions.minimalist {
+        flex-direction: column;
+    }
+    
+    .info-table.minimalist {
+        font-size: 0.85rem;
+    }
+    
+    .info-table.minimalist th,
+    .info-table.minimalist td {
+        padding: 0.5rem;
+    }
 }

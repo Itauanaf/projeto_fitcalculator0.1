@@ -19,17 +19,15 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="calculator.css">
 </head>
-<script src="calculator.js"></script>
-<script src="script.js"></script>
 
 <body>
-    <!-- Header -->
+    <!-- Header CORRIGIDO -->
     <header class="bg-surface-color" role="banner">
         <div class="container">
             <nav class="navbar" aria-label="Navegação principal">
                 <!-- Logo -->
                 <div class="nav-brand">
-                    <a href="#" id="logo" aria-label="FitCalculator - Página inicial">
+                    <a href="index.html" id="logo" aria-label="FitCalculator - Página inicial">
                         <img src="assets/fit02.png" alt="Logo FitCalculator" width="150" height="40">
                     </a>
                 </div>
@@ -42,20 +40,25 @@
                     <span class="menu-toggle__line"></span>
                 </button>
 
-                <!-- Menu de Navegação -->
+                <!-- Menu de Navegação CORRIGIDO -->
                 <ul id="menu" class="nav-menu" role="menubar">
                     <li role="none">
-                        <a href="#calculator-section" class="nav-link active" role="menuitem" data-target="imc">
+                        <a href="index.html" class="nav-link active" role="menuitem">
+                            Início
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a href="imc.html" class="nav-link" role="menuitem">
                             Calculadora IMC
                         </a>
                     </li>
                     <li role="none">
-                        <a href="#calculator-section" class="nav-link" role="menuitem" data-target="macros">
+                        <a href="macros.html" class="nav-link" role="menuitem">
                             Calculadora de Macronutrientes
                         </a>
                     </li>
                     <li role="none">
-                        <a href="#calculator-section" class="nav-link" role="menuitem" data-target="tdee">
+                        <a href="tdee.html" class="nav-link" role="menuitem">
                             Calculadora TDEE
                         </a>
                     </li>
@@ -79,64 +82,63 @@
                         Tudo em uma plataforma gratuita e fácil de usar.
                     </p>
                     <div class="hero-actions">
-                        <a href="#calculator-section" class="cta-button" aria-label="Explorar calculadoras">
+                        <a href="#calculators" class="cta-button" aria-label="Explorar calculadoras">
                             Começar Agora
                         </a>
-                        
                     </div>
                 </div>
             </div>
         </section>
 
-                <!-- Seção de Calculadoras (CARDS) -->
+        <!-- Seção de Calculadoras (CARDS) -->
         <section id="calculators" class="calculators">
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Nossas Calculadoras</h2>
                     <p class="section-subtitle">Escolha a ferramenta ideal para seus objetivos</p>
                 </div>
-                
+
                 <div class="cards-container">
                     <!-- Card IMC -->
                     <article class="card">
                         <div class="card-icon">
-                            <img src="assets/imc-icon.png" alt="Ícone IMC" width="40">
+                            <img src="assets/grafico.png" alt="">
                         </div>
                         <h3 class="card-title">Calculadora IMC</h3>
                         <p class="card-description">
                             Calcule seu Índice de Massa Corporal e descubra sua classificação de peso.
                         </p>
-                        <a href="imc.html" class="card-button" aria-label="Abrir calculadora de IMC">
+                        <button onclick="window.location.href='imc.html'" class="card-button">
                             Calcular IMC
-                        </a>
+                        </button>
                     </article>
 
                     <!-- Card Macronutrientes -->
                     <article class="card">
                         <div class="card-icon">
-                            <img src="assets/macros-icon.png" alt="Ícone Macronutrientes" width="40">
+                            <img src="assets/protein.png" alt="">
                         </div>
                         <h3 class="card-title">Macronutrientes</h3>
                         <p class="card-description">
                             Descubra suas necessidades diárias de proteínas, carboidratos e gorduras.
                         </p>
-                        <a href="macros.html" class="card-button" aria-label="Abrir calculadora de macronutrientes">
+                        <button onclick="window.location.href='macros.html'" class="card-button">
                             Calcular Macros
-                        </a>
+                        </button>
                     </article>
 
                     <!-- Card TDEE -->
                     <article class="card">
                         <div class="card-icon">
-                            <img src="assets/tdee-icon.png" alt="Ícone TDEE" width="40">
+                            <img src="assets/fire.avif" alt="calorias">
                         </div>
                         <h3 class="card-title">Calculadora TDEE</h3>
                         <p class="card-description">
                             Calcule seu gasto energético total diário para ajustar sua dieta.
                         </p>
-                        <a href="tdee.html" class="card-button" aria-label="Abrir calculadora de TDEE">
+                        <button onclick="window.location.href='tdee.html'" class="card-button">
                             Calcular TDEE
-                        </a>
+                        </button>
                     </article>
                 </div>
             </div>
@@ -168,6 +170,16 @@
 
     <script src="calculator.js"></script>
     <script src="script.js"></script>
+
+    <script>
+        // Ano atual no footer
+        document.addEventListener('DOMContentLoaded', function () {
+            const yearElement = document.getElementById('current-year');
+            if (yearElement) {
+                yearElement.textContent = new Date().getFullYear();
+            }
+        });
+    </script>
 </body>
 
 </html>

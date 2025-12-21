@@ -1,91 +1,110 @@
-// calculator.js - Lógica das calculadoras
+// calculator.js - VERSÃO PARA PÁGINAS SEPARADAS
 
 class CalculatorService {
   constructor() {
-    this.initializeCalculators();
-  }
-
-  initializeCalculators() {
-    console.log('Inicializando calculadoras...');
+    console.log('🚀 Inicializando CalculatorService...');
     
-    // IMC Calculator
+    // Detecta em qual página estamos
+    this.currentPage = this.detectCurrentPage();
+    console.log(`📄 Página detectada: ${this.currentPage}`);
+    
+    // Inicializa apenas a calculadora da página atual
+    this.initialize();
+  }
+  
+  // Método NOVO: Detecta qual página está carregando
+  detectCurrentPage() {
+    const path = window.location.pathname.toLowerCase();
+    
+    if (path.includes('imc.html') || path.includes('imc')) {
+      return 'imc';
+    }
+    
+    if (path.includes('macros.html') || path.includes('macros')) {
+      return 'macros';
+    }
+    
+    if (path.includes('tdee.html') || path.includes('tdee')) {
+      return 'tdee';
+    }
+    
+    return 'index'; // Página inicial ou outra
+  }
+  
+  initialize() {
+    // Configura APENAS a calculadora da página atual
+    switch(this.currentPage) {
+      case 'imc':
+        this.setupIMCCalculator();
+        break;
+        
+      case 'macros':
+        this.setupMacrosCalculator();
+        break;
+        
+      case 'tdee':
+        this.setupTDEECalculator();
+        break;
+        
+      default:
+        console.log('🏠 Página inicial ou não identificada - sem calculadoras');
+    }
+    
+    // Configura botões que existem em todas as páginas
+    this.setupSaveButtons();
+    this.setupActionButtons();
+  }
+  
+  // ========== CONFIGURAÇÃO IMC ==========
+  setupIMCCalculator() {
+    console.log('✅ Configurando calculadora IMC...');
+    
     const imcForm = document.getElementById('imc-form');
-    if (imcForm) {
-      console.log('Formulário IMC encontrado');
-      imcForm.addEventListener('submit', (e) => this.handleIMCSubmit(e));
-      
-      // Clear button
-      const clearBtn = imcForm.querySelector('.clear-btn');
-      if (clearBtn) {
-        clearBtn.addEventListener('click', () => this.clearIMCForm());
-      }
-    } else {
-      console.warn('Formulário IMC não encontrado');
+    if (!imcForm) {
+      console.error('❌ Formulário IMC não encontrado!');
+      return;
     }
-
-    // Macros Calculator
-    const macrosForm = document.getElementById('macros-form');
-    if (macrosForm) {
-      console.log('ormulário Macros encontrado');
-      macrosForm.addEventListener('submit', (e) => this.handleMacrosSubmit(e));
-      
-      const clearBtnMacros = macrosForm.querySelector('.clear-btn');
-      if (clearBtnMacros) {
-        clearBtnMacros.addEventListener('click', () => this.clearMacrosForm());
-      }
-    }
-
-    // TDEE Calculator
-    const tdeeForm = document.getElementById('tdee-form');
-    if (tdeeForm) {
-      console.log('Formulário TDEE encontrado');
-      tdeeForm.addEventListener('submit', (e) => this.handleTDEESubmit(e));
-      
-      const clearBtnTDEE = tdeeForm.querySelector('.clear-btn');
-      if (clearBtnTDEE) {
-        clearBtnTDEE.addEventListener('click', () => this.clearTdeeForm());
-      }
-    }
-
-    // Tab switching
-    this.initializeTabs();
     
-    // Save buttons
-    this.initializeSaveButtons();
+    // Evento de submit
+    imcForm.addEventListener('submit', (e) => this.handleIMCSubmit(e));
     
-    console.log('Calculadoras inicializadas com sucesso!');
+    // Botão limpar
+    const clearBtn = imcForm.querySelector('.clear-btn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.clearIMCForm());
+    }
+    
+    console.log('✅ Calculadora IMC configurada com sucesso!');
   }
-
-  // ========== IMC CALCULATOR ==========
+  
   handleIMCSubmit(e) {
     e.preventDefault();
-    console.log('Calculando IMC...');
+    console.log('📊 Calculando IMC...');
     
     const formData = new FormData(e.target);
     const data = {
       weight: parseFloat(formData.get('weight')),
       height: parseFloat(formData.get('height'))
     };
-
+    
     // Validação
     if (!this.validateIMCData(data)) {
       this.showError('Por favor, insira valores válidos para peso e altura');
       return;
     }
-
+    
     // Cálculo
     const result = this.calculateIMC(data);
     
     // Exibir resultado
     this.displayIMCResult(result);
     
-    // Salvar localmente
+    // Salvar no histórico
     this.saveToLocalStorage('imc', data, result);
   }
-
+  
   validateIMCData(data) {
     if (isNaN(data.weight) || isNaN(data.height)) {
-      console.error('Dados IMC inválidos:', data);
       return false;
     }
     if (data.weight < 20 || data.weight > 300) {
@@ -98,7 +117,7 @@ class CalculatorService {
     }
     return true;
   }
-
+  
   calculateIMC(data) {
     // Fórmula: peso (kg) / altura² (m)
     const heightInMeters = data.height / 100;
@@ -130,7 +149,7 @@ class CalculatorService {
       timestamp: new Date().toISOString()
     };
   }
-
+  
   classifyIMC(imc) {
     if (imc < 18.5) return {
       level: 'underweight',
@@ -169,7 +188,7 @@ class CalculatorService {
       risk: 'Risco muito alto de doenças'
     };
   }
-
+  
   displayIMCResult(result) {
     const resultContainer = document.getElementById('imc-result');
     const imcValue = document.getElementById('imc-value');
@@ -178,8 +197,7 @@ class CalculatorService {
     const imcProgress = document.getElementById('imc-progress');
     
     if (!resultContainer || !imcValue) {
-      console.error('Elementos do resultado IMC não encontrados');
-      this.showError('Elementos do resultado não encontrados');
+      console.error('❌ Elementos do resultado IMC não encontrados');
       return;
     }
     
@@ -196,20 +214,16 @@ class CalculatorService {
     if (imcProgress) {
       imcProgress.style.width = `${result.progress}%`;
       imcProgress.style.backgroundColor = result.classification.color;
-      imcProgress.style.borderRightColor = result.classification.color;
     }
-    
-    // Mostrar dica de saúde
-    this.showHealthTip(result.classification.level);
     
     // Scroll para o resultado
     setTimeout(() => {
-      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
     
-    console.log('IMC calculado:', result);
+    console.log('✅ IMC calculado:', result);
   }
-
+  
   clearIMCForm() {
     const form = document.getElementById('imc-form');
     const result = document.getElementById('imc-result');
@@ -219,11 +233,30 @@ class CalculatorService {
     
     this.showSuccess('Formulário limpo!');
   }
-
-  // ========== MACROS CALCULATOR ==========
+  
+  // ========== CONFIGURAÇÃO MACROS ==========
+  setupMacrosCalculator() {
+    console.log('✅ Configurando calculadora de Macros...');
+    
+    const macrosForm = document.getElementById('macros-form');
+    if (!macrosForm) {
+      console.error('❌ Formulário Macros não encontrado!');
+      return;
+    }
+    
+    macrosForm.addEventListener('submit', (e) => this.handleMacrosSubmit(e));
+    
+    const clearBtn = macrosForm.querySelector('.clear-btn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.clearMacrosForm());
+    }
+    
+    console.log('✅ Calculadora Macros configurada com sucesso!');
+  }
+  
   handleMacrosSubmit(e) {
     e.preventDefault();
-    console.log('Calculando Macronutrientes...');
+    console.log('🥩 Calculando Macronutrientes...');
     
     const formData = new FormData(e.target);
     const data = {
@@ -232,23 +265,23 @@ class CalculatorService {
       goal: formData.get('goal'),
       dietType: formData.get('dietType') || 'balanced'
     };
-
+    
     // Validação
     if (!this.validateMacrosData(data)) {
       this.showError('Por favor, preencha todos os campos corretamente');
       return;
     }
-
+    
     // Cálculo
     const result = this.calculateMacros(data);
     
     // Exibir resultado
     this.displayMacrosResult(result);
     
-    // Salvar localmente
+    // Salvar no histórico
     this.saveToLocalStorage('macros', data, result);
   }
-
+  
   validateMacrosData(data) {
     if (isNaN(data.weight) || data.weight < 30 || data.weight > 300) {
       this.showError('Peso deve estar entre 30kg e 300kg');
@@ -260,53 +293,38 @@ class CalculatorService {
     }
     return true;
   }
-
+  
   calculateMacros(data) {
-    // 1. Calcular TDEE primeiro (fórmula simplificada)
+    // Cálculo simplificado (você pode melhorar depois)
     const tdee = this.estimateTDEE({
       weight: data.weight,
       activityLevel: data.activityLevel
     });
     
-    // 2. Ajustar calorias baseado no objetivo
     let targetCalories;
     switch(data.goal) {
-      case 'loss':
-        targetCalories = tdee * 0.8; // Déficit de 20%
-        break;
-      case 'gain':
-        targetCalories = tdee * 1.2; // Superávit de 20%
-        break;
-      default:
-        targetCalories = tdee; // Manutenção
+      case 'loss': targetCalories = tdee * 0.8; break;
+      case 'gain': targetCalories = tdee * 1.2; break;
+      default: targetCalories = tdee;
     }
     
-    // 3. Calcular macros baseado no tipo de dieta
+    // Distribuição baseada no tipo de dieta
     let proteinPerKg, carbPercentage, fatPercentage;
     
     switch(data.dietType) {
       case 'low-carb':
-        proteinPerKg = 2.2;
-        carbPercentage = 0.25;
-        fatPercentage = 0.40;
+        proteinPerKg = 2.2; carbPercentage = 0.25; fatPercentage = 0.40;
         break;
       case 'high-protein':
-        proteinPerKg = 2.5;
-        carbPercentage = 0.40;
-        fatPercentage = 0.25;
+        proteinPerKg = 2.5; carbPercentage = 0.40; fatPercentage = 0.25;
         break;
       case 'keto':
-        proteinPerKg = 1.8;
-        carbPercentage = 0.05;
-        fatPercentage = 0.70;
+        proteinPerKg = 1.8; carbPercentage = 0.05; fatPercentage = 0.70;
         break;
       default: // balanced
-        proteinPerKg = 1.8;
-        carbPercentage = 0.50;
-        fatPercentage = 0.30;
+        proteinPerKg = 1.8; carbPercentage = 0.50; fatPercentage = 0.30;
     }
     
-    // Cálculos finais
     const proteinGrams = Math.round(data.weight * proteinPerKg);
     const proteinCalories = proteinGrams * 4;
     
@@ -340,11 +358,9 @@ class CalculatorService {
       timestamp: new Date().toISOString()
     };
   }
-
+  
   estimateTDEE(data) {
-    // Fórmula simplificada: BMR × Multiplicador de Atividade
-    // BMR Estimado (Mifflin-St Jeor simplificado)
-    const bmr = 10 * data.weight + 6.25 * 170 - 5 * 30 + 5; // Altura 170cm, idade 30 default
+    const bmr = 10 * data.weight + 6.25 * 170 - 5 * 30 + 5;
     
     const activityMultipliers = {
       sedentary: 1.2,
@@ -356,7 +372,7 @@ class CalculatorService {
     
     return bmr * (activityMultipliers[data.activityLevel] || 1.2);
   }
-
+  
   displayMacrosResult(result) {
     const resultContainer = document.getElementById('macros-result');
     const totalCalories = document.getElementById('total-calories');
@@ -386,12 +402,12 @@ class CalculatorService {
     
     // Scroll para o resultado
     setTimeout(() => {
-      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
     
     console.log('✅ Macros calculados:', result);
   }
-
+  
   clearMacrosForm() {
     const form = document.getElementById('macros-form');
     const result = document.getElementById('macros-result');
@@ -401,11 +417,30 @@ class CalculatorService {
     
     this.showSuccess('Formulário limpo!');
   }
-
-  // ========== TDEE CALCULATOR ==========
+  
+  // ========== CONFIGURAÇÃO TDEE ==========
+  setupTDEECalculator() {
+    console.log('✅ Configurando calculadora TDEE...');
+    
+    const tdeeForm = document.getElementById('tdee-form');
+    if (!tdeeForm) {
+      console.error('❌ Formulário TDEE não encontrado!');
+      return;
+    }
+    
+    tdeeForm.addEventListener('submit', (e) => this.handleTDEESubmit(e));
+    
+    const clearBtn = tdeeForm.querySelector('.clear-btn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.clearTdeeForm());
+    }
+    
+    console.log('✅ Calculadora TDEE configurada com sucesso!');
+  }
+  
   handleTDEESubmit(e) {
     e.preventDefault();
-    console.log('Calculando TDEE...');
+    console.log('🔥 Calculando TDEE...');
     
     const formData = new FormData(e.target);
     const data = {
@@ -415,17 +450,17 @@ class CalculatorService {
       height: parseFloat(formData.get('height')),
       activityLevel: formData.get('activityLevel')
     };
-
+    
     if (!this.validateTDEEData(data)) {
       this.showError('Por favor, preencha todos os campos corretamente');
       return;
     }
-
+    
     const result = this.calculateTDEE(data);
     this.displayTDEEResult(result);
     this.saveToLocalStorage('tdee', data, result);
   }
-
+  
   validateTDEEData(data) {
     if (isNaN(data.age) || data.age < 15 || data.age > 100) {
       this.showError('Idade deve estar entre 15 e 100 anos');
@@ -449,7 +484,7 @@ class CalculatorService {
     }
     return true;
   }
-
+  
   calculateTDEE(data) {
     // Fórmula Harris-Benedict
     let bmr;
@@ -486,7 +521,7 @@ class CalculatorService {
       timestamp: new Date().toISOString()
     };
   }
-
+  
   displayTDEEResult(result) {
     const resultContainer = document.getElementById('tdee-result');
     const bmrValue = document.getElementById('bmr-value');
@@ -496,7 +531,7 @@ class CalculatorService {
     const gainCalories = document.getElementById('gain-calories');
     
     if (!resultContainer) {
-      console.error('Container de resultados TDEE não encontrado');
+      console.error('❌ Container de resultados TDEE não encontrado');
       return;
     }
     
@@ -512,12 +547,12 @@ class CalculatorService {
     
     // Scroll para o resultado
     setTimeout(() => {
-      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
     
-    console.log('TDEE calculado:', result);
+    console.log('✅ TDEE calculado:', result);
   }
-
+  
   clearTdeeForm() {
     const form = document.getElementById('tdee-form');
     const result = document.getElementById('tdee-result');
@@ -527,44 +562,9 @@ class CalculatorService {
     
     this.showSuccess('Formulário limpo!');
   }
-
-  // ========== UTILITIES ==========
-  initializeTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    if (tabBtns.length === 0) {
-      console.warn('Botões de tabs não encontrados');
-      return;
-    }
-    
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tabId = btn.dataset.tab;
-        
-        // Atualizar botões
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // Atualizar conteúdos
-        tabContents.forEach(content => {
-          content.classList.remove('active');
-          if (content.id === `${tabId}-calculator`) {
-            content.classList.add('active');
-          }
-        });
-        
-        // Limpar formulários da aba anterior
-        this.clearAllForms();
-        
-        console.log(`Tab ${tabId} ativada`);
-      });
-    });
-    
-    console.log(`✅ ${tabBtns.length} tabs inicializadas`);
-  }
-
-  initializeSaveButtons() {
+  
+  // ========== FUNÇÕES UTILITÁRIAS ==========
+  setupSaveButtons() {
     const saveButtons = document.querySelectorAll('.save-btn');
     
     saveButtons.forEach(btn => {
@@ -573,10 +573,24 @@ class CalculatorService {
         this.saveCalculationToHistory(type);
       });
     });
-    
-    console.log(`✅ ${saveButtons.length} botões de salvar inicializados`);
   }
-
+  
+  setupActionButtons() {
+    // Botões Compartilhar
+    document.querySelectorAll('.share-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.shareResult();
+      });
+    });
+    
+    // Botões Histórico
+    document.querySelectorAll('.history-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.showHistory();
+      });
+    });
+  }
+  
   saveToLocalStorage(type, data, result) {
     try {
       const history = JSON.parse(localStorage.getItem(`fitcalculator_${type}_history`) || '[]');
@@ -607,7 +621,7 @@ class CalculatorService {
       this.showError('Erro ao salvar cálculo');
     }
   }
-
+  
   saveCalculationToHistory(type) {
     let data, result;
     
@@ -661,14 +675,26 @@ class CalculatorService {
         break;
     }
   }
-
-  clearAllForms() {
-    document.querySelectorAll('.calculator-form').forEach(form => form.reset());
-    document.querySelectorAll('.result-container').forEach(container => {
-      container.classList.add('hidden');
-    });
+  
+  shareResult() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Meu cálculo no FitCalculator',
+        text: 'Calculei meu IMC/Macros/TDEE no FitCalculator!',
+        url: window.location.href
+      });
+    } else {
+      this.showSuccess('Link copiado para a área de transferência!');
+      // Fallback: copiar URL para clipboard
+      navigator.clipboard.writeText(window.location.href);
+    }
   }
-
+  
+  showHistory() {
+    alert('Histórico será implementado em breve!');
+    // Você pode implementar um modal com o histórico aqui
+  }
+  
   showError(message) {
     // Remover mensagens anteriores
     document.querySelectorAll('.error-message').forEach(el => el.remove());
@@ -691,7 +717,7 @@ class CalculatorService {
       }
     }, 4000);
   }
-
+  
   showSuccess(message) {
     // Remover mensagens anteriores
     document.querySelectorAll('.success-message').forEach(el => el.remove());
@@ -714,79 +740,10 @@ class CalculatorService {
       }
     }, 3000);
   }
-
-  showHealthTip(imcLevel) {
-    const tips = {
-      underweight: [
-        "Consulte um nutricionista para ganho de peso saudável",
-        "Inclua alimentos densos em nutrientes na sua dieta",
-        "Pratique exercícios de força para ganhar massa muscular"
-      ],
-      normal: [
-        "Parabéns! Mantenha hábitos saudáveis",
-        "Continue com alimentação balanceada e exercícios regulares",
-        "Faça check-ups periódicos para monitorar sua saúde"
-      ],
-      overweight: [
-        "Considere reduzir o consumo de alimentos processados",
-        "Aumente sua atividade física gradualmente",
-        "Beba bastante água e durma bem"
-      ],
-      obesity1: [
-        "Consulte um médico para avaliação completa",
-        "Busque orientação de um nutricionista",
-        "Comece com atividades físicas leves e aumente gradualmente"
-      ],
-      obesity2: [
-        "Procure acompanhamento médico especializado",
-        "Considere programas de perda de peso supervisionados",
-        "Foque em mudanças de hábitos sustentáveis"
-      ],
-      obesity3: [
-        "Busque atendimento médico urgentemente",
-        "Procure acompanhamento multidisciplinar",
-        "Peça apoio familiar e profissional"
-      ]
-    };
-    
-    const tipList = tips[imcLevel] || tips.normal;
-    const randomTip = tipList[Math.floor(Math.random() * tipList.length)];
-    
-    // Você pode mostrar essa dica em algum lugar da interface
-    console.log(`💡 Dica de saúde: ${randomTip}`);
-    
-    // Opcional: Mostrar a dica na interface
-    const tipElement = document.createElement('div');
-    tipElement.className = 'health-tip';
-    tipElement.innerHTML = `
-      <strong>💡 Dica:</strong> ${randomTip}
-    `;
-    tipElement.style.cssText = `
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #f0f9ff;
-      border-left: 4px solid #3b82f6;
-      border-radius: 4px;
-      color: #1e40af;
-      font-size: 0.95rem;
-    `;
-    
-    // Adicionar ao resultado IMC se quiser
-    const imcResult = document.getElementById('imc-result');
-    if (imcResult) {
-      const existingTip = imcResult.querySelector('.health-tip');
-      if (existingTip) existingTip.remove();
-      
-      const resultContent = imcResult.querySelector('.result-content');
-      if (resultContent) {
-        resultContent.appendChild(tipElement);
-      }
-    }
-  }
 }
 
-// Inicializar quando o DOM carregar
-document.addEventListener('DOMContentLoaded', () => {
+// Inicializar automaticamente quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
   console.log('📄 DOM carregado, inicializando CalculatorService...');
   
   try {

@@ -170,7 +170,7 @@ body {
 
 .nav-link:hover {
   color: var(--brand-color);
-  background-color: var(--brand-color-light);
+  
 }
 
 .nav-link.active {
@@ -1519,4 +1519,237 @@ body {
   animation: spin 0.8s linear infinite;
   margin-left: 0.5rem;
   vertical-align: middle;
+}
+
+/* ====== ESTILOS PARA PÁGINAS SEPARADAS ====== */
+
+/* Página de calculadora individual */
+.calculator-page {
+    padding: var(--spacing-xl) 0;
+    background: var(--surface-color);
+}
+
+.calculator-page .container {
+    max-width: 1200px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.page-title {
+    font: var(--text-xl);
+    color: var(--text-color-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.page-description {
+    font-size: 1.25rem;
+    color: var(--text-color-tertiary);
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.calculator-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+}
+
+@media (min-width: 992px) {
+    .calculator-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Informações da calculadora */
+.calculator-info {
+    background: var(--background-color);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.calculator-info h2 {
+    font: var(--text-lg);
+    color: var(--text-color-primary);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.calculator-info h3 {
+    font: var(--text-md);
+    color: var(--text-color-primary);
+    margin: var(--spacing-lg) 0 var(--spacing-sm);
+}
+
+.calculator-info p {
+    color: var(--text-color-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Tabelas de informação */
+.info-table {
+    overflow-x: auto;
+    margin: var(--spacing-lg) 0;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.info-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--background-color);
+}
+
+.info-table th {
+    background: var(--brand-color-light);
+    color: var(--brand-color);
+    font-weight: 600;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.info-table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color-secondary);
+}
+
+.info-table tr:hover {
+    background: rgba(76, 175, 80, 0.05);
+}
+
+.info-table tr.normal {
+    background: rgba(52, 211, 153, 0.1);
+}
+
+/* Cards de informação */
+.info-card {
+    background: var(--surface-color);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+    border-left: 4px solid var(--brand-color);
+}
+
+.info-card.warning {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.info-card h3 {
+    margin-top: 0;
+    color: var(--text-color-primary);
+}
+
+.info-card ul {
+    padding-left: 1.5rem;
+    margin: var(--spacing-sm) 0;
+}
+
+.info-card li {
+    margin-bottom: 0.5rem;
+    color: var(--text-color-secondary);
+}
+
+.info-card .disclaimer {
+    font-style: italic;
+    color: var(--text-color-tertiary);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Informações sobre macros */
+.macros-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+}
+
+@media (min-width: 768px) {
+    .macros-info {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.macro-info-card {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    border: 2px solid var(--border-color);
+    transition: transform var(--transition-base);
+}
+
+.macro-info-card:hover {
+    transform: translateY(-2px);
+}
+
+.macro-info-card.protein {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.macro-info-card.carbs {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.macro-info-card.fats {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.macro-info-card h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Componentes TDEE */
+.tdee-components {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+}
+
+@media (min-width: 768px) {
+    .tdee-components {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.component {
+    padding: var(--spacing-md);
+    background: var(--surface-color);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.component h3 {
+    margin-top: 0;
+    color: var(--brand-color);
+}
+
+.component p {
+    margin-bottom: 0.5rem;
+}
+
+/* Ajustes para a calculadora em página única */
+.calculator-page .calculator-card {
+    margin-bottom: 0;
+}
+
+.calculator-page .calculator-form {
+    margin-bottom: var(--spacing-lg);
 }
