@@ -1,2 +1,5 @@
 export * from './bmi'
 export * from './bmr'
+export * from './calories'
+export * from './macros'
+export * from './tdee'
