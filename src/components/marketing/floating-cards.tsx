@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { DonutChart } from '@/components/charts'
 import { cn } from '@/lib/cn'
@@ -82,6 +83,25 @@ export function FloatingMacrosCard({ className }: { className?: string }) {
       <div className="mt-2 flex items-center justify-between border-t border-border pt-2 text-[11px]">
         <span className="text-text-muted">Total</span>
         <span className="font-semibold text-text-primary">{total}g</span>
+      </div>
+    </FloatingCardShell>
+  )
+}
+
+/** Mirrors the real role picker on the sign-up form — this is a working feature, not a mock. */
+export function FloatingAccountCard({ className }: { className?: string }) {
+  return (
+    <FloatingCardShell className={className} delay="2s">
+      <span className="text-xs font-semibold text-text-secondary">Sua conta</span>
+      <p className="mt-1 text-[11px] text-text-muted">Escolha seu perfil ao criar a conta</p>
+      <div className="mt-3 flex flex-col gap-2">
+        <span className="flex items-center justify-between rounded-xl border border-primary bg-primary-soft px-3 py-2 text-xs font-semibold text-primary">
+          Aluno
+          <Check className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden="true" />
+        </span>
+        <span className="rounded-xl border border-border px-3 py-2 text-xs font-medium text-text-secondary">
+          Personal Trainer
+        </span>
       </div>
     </FloatingCardShell>
   )

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getCurrentProfile } from '@/application/authorization/get-current-profile'
 import { CalculatorNav } from '@/components/calculator'
 import { TdeeCalculator } from '@/features/tdee/tdee-calculator'
 
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
     'Calcule sua Taxa Metabólica Basal (TMB) e seu Gasto Energético Total Diário (TDEE) a partir do seu nível de atividade.',
 }
 
-export default function TdeePage() {
+export default async function TdeePage() {
+  await getCurrentProfile({ redirectTo: '/calculadoras/tdee' })
+
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
       <CalculatorNav />

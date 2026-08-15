@@ -10,10 +10,10 @@ const MACRO_SEGMENTS = [
 /**
  * Decorative preview of the product inside a phone frame, showing an
  * example calculation. Deliberately shows only what the app actually
- * does: three on-demand, stateless calculators. No name/avatar (there
- * are no accounts), no "vs. yesterday"/streak-style comparisons or
- * trend charts (there's no database, so nothing is tracked over
- * time) — showing those would misrepresent the product.
+ * does: three calculators plus an account to save the results under.
+ * No name/avatar and no "vs. yesterday"/streak-style trend charts —
+ * the dashboard that would track those over time isn't built yet
+ * (Milestone 4/5), so showing them here would misrepresent the product.
  */
 export function PhonePreview() {
   return (
@@ -32,7 +32,7 @@ export function PhonePreview() {
           {/* Header */}
           <div className="px-6 pt-5">
             <p className="text-lg font-semibold text-text-primary">Seus resultados</p>
-            <p className="text-xs text-text-muted">Calculados na hora, sem cadastro.</p>
+            <p className="text-xs text-text-muted">Crie uma conta e acompanhe sua evolução.</p>
           </div>
 
           {/* Tabs: the three calculators the app actually has */}

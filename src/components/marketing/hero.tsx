@@ -1,8 +1,13 @@
-import { ArrowRight, Play } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { LinkButton } from '@/components/ui'
 import { BenefitsBar } from './benefits-bar'
 import { DumbbellDecoration, HeroBackdrop, ShakerDecoration } from './decorative-shapes'
-import { FloatingBmiCard, FloatingMacrosCard, FloatingTdeeCard } from './floating-cards'
+import {
+  FloatingAccountCard,
+  FloatingBmiCard,
+  FloatingMacrosCard,
+  FloatingTdeeCard,
+} from './floating-cards'
 import { PhonePreview } from './phone-preview'
 
 export function Hero() {
@@ -32,19 +37,20 @@ export function Hero() {
           className="animate-rise-in mt-5 max-w-[720px] text-[17px] leading-[1.55] text-text-secondary"
           style={{ animationDelay: '80ms' }}
         >
-          Entenda suas necessidades calóricas, métricas corporais e macronutrientes diárias em uma
-          única ferramenta moderna e completa.
+          Crie uma conta gratuita para calcular e acompanhar sua evolução — como aluno cuidando do
+          próprio progresso, ou como personal trainer acompanhando seus alunos.
         </p>
 
         <div
           className="animate-rise-in mt-7 flex flex-col gap-3.5 sm:flex-row"
           style={{ animationDelay: '140ms' }}
         >
-          <LinkButton href="/calculadoras/imc" variant="primary">
-            Começar agora <ArrowRight className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
+          <LinkButton href="/cadastro" variant="primary">
+            Criar conta grátis{' '}
+            <ArrowRight className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
           </LinkButton>
           <LinkButton href="#como-funciona" variant="secondary">
-            Ver como funciona <Play className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
+            Ver como funciona
           </LinkButton>
         </div>
 
@@ -58,6 +64,7 @@ export function Hero() {
           <FloatingBmiCard className="absolute top-6 left-0 xl:left-10" />
           <FloatingMacrosCard className="absolute top-6 right-0 xl:right-10" />
           <FloatingTdeeCard className="absolute bottom-6 left-0 xl:left-10" />
+          <FloatingAccountCard className="absolute right-0 bottom-6 hidden xl:right-10 xl:block" />
           <PhonePreview />
         </div>
 

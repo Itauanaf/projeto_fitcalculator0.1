@@ -1,3 +1,4 @@
+export * from './audience-section'
 export * from './benefits-bar'
 export * from './calculators-section'
 export * from './decorative-shapes'

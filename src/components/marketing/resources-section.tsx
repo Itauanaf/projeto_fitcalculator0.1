@@ -30,7 +30,7 @@ const RESOURCES: { icon: LucideIcon; title: string; description: string }[] = [
   {
     icon: Lock,
     title: 'Privacidade',
-    description: 'Seus dados ficam no seu dispositivo, sob seu controle.',
+    description: 'Um personal só vê os dados de alunos vinculados — nunca de outra pessoa.',
   },
 ]
 

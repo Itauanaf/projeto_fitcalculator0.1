@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { signIn } from '@/application/auth/sign-in'
@@ -10,6 +11,8 @@ import { loginSchema, type LoginInput } from '@/schemas/auth.schema'
 
 export function LoginForm() {
   const [formError, setFormError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const next = searchParams.get('next') ?? undefined
 
   const {
     register,
@@ -19,7 +22,7 @@ export function LoginForm() {
 
   async function onSubmit(data: LoginInput) {
     setFormError(null)
-    const result = await signIn(data)
+    const result = await signIn(data, next)
     if (result?.error) setFormError(result.error)
   }
 
@@ -28,7 +31,9 @@ export function LoginForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold text-text-primary">Entrar</h1>
-          <p className="text-sm text-text-secondary">Acesse sua conta FitCalculator.</p>
+          <p className="text-sm text-text-secondary">
+            {next ? 'Entre na sua conta para continuar.' : 'Acesse sua conta FitCalculator.'}
+          </p>
         </div>
 
         <TextField

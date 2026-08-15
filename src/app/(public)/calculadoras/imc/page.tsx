@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getCurrentProfile } from '@/application/authorization/get-current-profile'
 import { CalculatorNav } from '@/components/calculator'
 import { BmiCalculator } from '@/features/bmi/bmi-calculator'
 
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
     'Calcule seu Índice de Massa Corporal (IMC) e veja a faixa de peso correspondente à sua altura.',
 }
 
-export default function BmiPage() {
+export default async function BmiPage() {
+  await getCurrentProfile({ redirectTo: '/calculadoras/imc' })
+
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
       <CalculatorNav />

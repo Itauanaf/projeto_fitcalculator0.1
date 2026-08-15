@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getCurrentProfile } from '@/application/authorization/get-current-profile'
 import { CalculatorNav } from '@/components/calculator'
 import { MacrosCalculator } from '@/features/macros/macros-calculator'
 
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
     'Calcule sua meta calórica e a distribuição de proteína, carboidrato e gordura para o seu objetivo.',
 }
 
-export default function MacrosPage() {
+export default async function MacrosPage() {
+  await getCurrentProfile({ redirectTo: '/calculadoras/macros' })
+
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
       <CalculatorNav />

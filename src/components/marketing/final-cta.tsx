@@ -9,10 +9,10 @@ export function FinalCta() {
           Entenda melhor seus números. Comece agora.
         </h2>
         <p className="mx-auto mt-4 max-w-md text-base text-white/80">
-          Sem cadastro, sem enrolação — leva menos de um minuto para ver seus primeiros resultados.
+          Crie sua conta gratuita e calcule seu IMC, TDEE e macros em poucos minutos.
         </p>
-        <LinkButton href="/calculadoras/imc" variant="light" className="mt-8">
-          Calcular agora <ArrowRight className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
+        <LinkButton href="/cadastro" variant="light" className="mt-8">
+          Criar conta grátis <ArrowRight className="h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
         </LinkButton>
       </div>
     </section>

@@ -15,7 +15,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Several specs sign in against the real Supabase project (no mocking).
+  // Too many concurrent auth requests contend for Prisma's connection pool
+  // and Supabase's API, causing spurious timeouts — capped instead of
+  // left to default to one worker per CPU core.
+  workers: process.env.CI ? 1 : 3,
   reporter: 'html',
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',

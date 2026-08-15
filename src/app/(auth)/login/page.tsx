@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { LoginForm } from '@/features/auth/login-form'
 
 export const metadata: Metadata = {
@@ -7,5 +8,11 @@ export const metadata: Metadata = {
 }
 
 export default function LoginPage() {
-  return <LoginForm />
+  return (
+    // useSearchParams() (reading ?next=) requires a Suspense boundary
+    // for this page to still prerender statically.
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  )
 }

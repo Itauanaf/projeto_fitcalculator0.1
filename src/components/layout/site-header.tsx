@@ -30,7 +30,6 @@ function activeHrefForPathname(pathname: string): NavHref {
 
 export function SiteHeader() {
   const pathname = usePathname()
-  const isOnCalculatorPage = pathname.startsWith('/calculadoras')
   const [activeHref, setActiveHref] = useState<NavHref>(() => activeHrefForPathname(pathname))
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
@@ -109,17 +108,20 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="flex items-center gap-2">
-            {/* Already inside a calculator — "get started" would just point back at where the user is. */}
-            {!isOnCalculatorPage && (
-              <LinkButton
-                href="/calculadoras/imc"
-                variant="dark"
-                className="hidden h-12 px-6 text-sm md:flex"
-              >
-                Começar agora <span aria-hidden="true">→</span>
-              </LinkButton>
-            )}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="hidden text-[15px] font-medium text-[#343B59] transition-colors hover:text-primary md:block"
+            >
+              Entrar
+            </Link>
+            <LinkButton
+              href="/cadastro"
+              variant="dark"
+              className="hidden h-12 px-6 text-sm md:flex"
+            >
+              Criar conta <span aria-hidden="true">→</span>
+            </LinkButton>
 
             <button
               ref={menuButtonRef}
@@ -170,16 +172,21 @@ export function SiteHeader() {
               </Link>
             )
           })}
-          {!isOnCalculatorPage && (
-            <LinkButton
-              href="/calculadoras/imc"
-              variant="primary"
-              className="mt-1 h-12 w-full text-sm"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Começar agora <span aria-hidden="true">→</span>
-            </LinkButton>
-          )}
+          <Link
+            href="/login"
+            onClick={() => setIsMenuOpen(false)}
+            className="rounded-2xl px-4 py-3 text-[15px] font-medium text-[#343B59] transition-colors hover:bg-primary-soft hover:text-primary"
+          >
+            Entrar
+          </Link>
+          <LinkButton
+            href="/cadastro"
+            variant="primary"
+            className="mt-1 h-12 w-full text-sm"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Criar conta <span aria-hidden="true">→</span>
+          </LinkButton>
         </nav>
       </div>
     </div>

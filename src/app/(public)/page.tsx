@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import {
+  AudienceSection,
   CalculatorsSection,
   FinalCta,
   Hero,
@@ -10,7 +11,7 @@ import {
 export const metadata: Metadata = {
   title: 'FitCalculator',
   description:
-    'Calcule seu IMC, TDEE e macros com clareza e rapidez. Entenda suas necessidades calóricas, métricas corporais e macronutrientes diárias numa única ferramenta moderna e completa.',
+    'Crie uma conta gratuita e calcule seu IMC, TDEE e macros com clareza e rapidez. Acompanhe sua evolução como aluno, ou a de seus alunos como personal trainer.',
 }
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
     <>
       <Hero />
       <CalculatorsSection />
+      <AudienceSection />
       <HowItWorksSection />
       <ResourcesSection />
       <FinalCta />
