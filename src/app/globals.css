@@ -1,26 +1,113 @@
 @import 'tailwindcss';
 
+/*
+ * Design tokens. This is a deliberately light-only palette (blue/indigo/violet,
+ * airy surfaces) — there is no dark variant by design, not by omission.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f7ff;
+  /* Kept as an alias for --text-primary so older `text-foreground`/`bg-foreground`
+     utilities used around the app keep resolving to the right color. */
+  --foreground: #10142e;
+
+  --surface: #ffffff;
+  --surface-soft: #f7f8fd;
+
+  --primary: #554fe8;
+  --primary-hover: #4740d7;
+  --primary-soft: #eef0ff;
+
+  --indigo: #6366f1;
+  --violet: #7047eb;
+  --blue-soft: #7588f8;
+
+  --text-primary: #10142e;
+  --text-secondary: #555f7d;
+  --text-muted: #8b93ab;
+
+  --success: #34a779;
+  --macro-fat: #e7bd5b;
+
+  --border: #e8eaf2;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-indigo: var(--indigo);
+  --color-violet: var(--violet);
+  --color-blue-soft: var(--blue-soft);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-success: var(--success);
+  --color-macro-fat: var(--macro-fat);
+
+  --color-border: var(--border);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Hero background: soft radial bloom fading out to the base background. */
+.hero-gradient {
+  background: radial-gradient(
+    circle at 50% 15%,
+    #ffffff 0%,
+    #eef2ff 30%,
+    #dce5ff 62%,
+    #c5d1ff 100%
+  );
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-rise-in {
+  animation: rise-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise-in,
+  .animate-float {
+    animation: none;
+  }
 }

@@ -14,9 +14,11 @@ interface NumberFieldProps {
  * and behave the same everywhere.
  */
 export function NumberField({ label, unit, error, registration }: NumberFieldProps) {
+  const errorId = error ? `${registration.name}-error` : undefined
+
   return (
     <label className="flex flex-col gap-1.5 text-sm">
-      <span className="font-medium text-foreground">
+      <span className="font-medium text-text-secondary">
         {label}
         {unit ? ` (${unit})` : ''}
       </span>
@@ -25,14 +27,20 @@ export function NumberField({ label, unit, error, registration }: NumberFieldPro
         step="any"
         inputMode="decimal"
         aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
         className={cn(
-          'rounded-lg border bg-transparent px-3 py-2 text-base outline-none transition-colors',
-          'focus:border-foreground/40',
-          error ? 'border-red-500' : 'border-foreground/15'
+          'h-[52px] rounded-[14px] border bg-surface-soft px-4 text-[15px] text-text-primary outline-none',
+          'transition-all duration-150 placeholder:text-text-muted',
+          'focus:border-[#625CF3] focus:shadow-[0_0_0_4px_rgba(98,92,243,0.10)]',
+          error ? 'border-rose-400' : 'border-border'
         )}
         {...registration}
       />
-      {error && <span className="text-xs text-red-500">{error.message}</span>}
+      {error && (
+        <span id={errorId} role="alert" className="text-xs text-rose-500">
+          {error.message}
+        </span>
+      )}
     </label>
   )
 }

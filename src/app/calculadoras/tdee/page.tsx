@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { CalculatorNav } from '@/components/calculator'
 import { TdeeCalculator } from '@/features/tdee/tdee-calculator'
 
 export const metadata: Metadata = {
@@ -10,9 +11,12 @@ export const metadata: Metadata = {
 export default function TdeePage() {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12">
+      <CalculatorNav />
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Calculadora de TDEE</h1>
-        <p className="text-foreground/60">
+        <h1 className="text-2xl font-semibold tracking-tight text-text-primary">
+          Calculadora de TDEE
+        </h1>
+        <p className="text-text-secondary">
           Informe seus dados e nível de atividade para calcular sua TMB e seu gasto calórico diário
           total.
         </p>
