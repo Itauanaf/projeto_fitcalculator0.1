@@ -1,0 +1,47 @@
+import type { BmiClassification } from '@/domain/calculations/bmi'
+import type { ActivityLevel } from '@/domain/value-objects/activity-level'
+import type { Goal } from '@/domain/value-objects/goal'
+import type { MacroStrategy } from '@/domain/value-objects/macro-strategy'
+import type { Sex } from '@/domain/value-objects/sex'
+
+/**
+ * Portuguese display labels for the domain's enum-like value objects.
+ * Kept out of `domain/` on purpose — the calculation engine has no
+ * concept of language or presentation, only these UI-facing maps do.
+ */
+
+export const SEX_LABELS: Record<Sex, string> = {
+  male: 'Masculino',
+  female: 'Feminino',
+}
+
+export const ACTIVITY_LEVEL_LABELS: Record<ActivityLevel, string> = {
+  sedentary: 'Sedentário (pouco ou nenhum exercício)',
+  light: 'Leve (exercício leve, 1–3 dias/semana)',
+  moderate: 'Moderado (exercício moderado, 3–5 dias/semana)',
+  active: 'Ativo (exercício intenso, 6–7 dias/semana)',
+  very_active: 'Muito ativo (exercício intenso diário ou trabalho físico)',
+}
+
+export const GOAL_LABELS: Record<Goal, string> = {
+  lose_weight: 'Perder peso',
+  maintain: 'Manter peso',
+  gain_weight: 'Ganhar peso',
+}
+
+export const MACRO_STRATEGY_LABELS: Record<MacroStrategy, string> = {
+  balanced: 'Balanceada',
+  high_protein: 'Alta proteína',
+  low_carb: 'Low carb',
+  keto: 'Cetogênica',
+  custom: 'Personalizada',
+}
+
+export const BMI_CLASSIFICATION_LABELS: Record<BmiClassification, string> = {
+  underweight: 'Abaixo do peso',
+  normal: 'Peso normal',
+  overweight: 'Sobrepeso',
+  obese_class_1: 'Obesidade grau I',
+  obese_class_2: 'Obesidade grau II',
+  obese_class_3: 'Obesidade grau III',
+}

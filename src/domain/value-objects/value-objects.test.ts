@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { ACTIVITY_LEVEL_VALUES, GOAL_VALUES, MACRO_STRATEGY_VALUES, SEX_VALUES } from './index'
+import {
+  ACTIVITY_LEVEL_VALUES,
+  CALCULATION_TYPE_VALUES,
+  GOAL_VALUES,
+  MACRO_STRATEGY_VALUES,
+  SEX_VALUES,
+} from './index'
 
 // These constants are the single source of truth for valid values across
 // Zod schemas, calculation modules and UI selects. A typo here would
@@ -39,5 +45,11 @@ describe('MACRO_STRATEGY_VALUES', () => {
       'keto',
       'custom',
     ])
+  })
+})
+
+describe('CALCULATION_TYPE_VALUES', () => {
+  it('has the exact values the history/repository layer keys on', () => {
+    expect(CALCULATION_TYPE_VALUES).toEqual(['bmi', 'bmr', 'tdee', 'calorie_target', 'macros'])
   })
 })

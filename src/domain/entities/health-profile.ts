@@ -19,3 +19,23 @@ export interface HealthProfile {
   goal: Goal
   macroStrategy: MacroStrategy
 }
+
+/**
+ * Plausible bounds, not hard biological limits — reject obvious
+ * typos/garbage (e.g. an age of 0 or 900) without gatekeeping real
+ * but unusual bodies. The BMR/TDEE formulas are also calibrated for
+ * this range and get less reliable outside it.
+ */
+export const MIN_AGE = 15
+export const MAX_AGE = 120
+
+export function isValidAge(age: number): boolean {
+  return Number.isInteger(age) && age >= MIN_AGE && age <= MAX_AGE
+}
+
+export const MIN_HEIGHT_CM = 100
+export const MAX_HEIGHT_CM = 250
+
+export function isValidHeightCm(heightCm: number): boolean {
+  return Number.isFinite(heightCm) && heightCm >= MIN_HEIGHT_CM && heightCm <= MAX_HEIGHT_CM
+}
