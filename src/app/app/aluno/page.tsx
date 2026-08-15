@@ -1,19 +1,25 @@
 import type { Metadata } from 'next'
+import { getStudentDashboard } from '@/application/students/get-student-dashboard'
 import { assertRole } from '@/application/authorization/assert-role'
 import { getCurrentProfile } from '@/application/authorization/get-current-profile'
 import { LogoutButton } from '@/features/auth/logout-button'
+import {
+  GoalForm,
+  HealthProfileForm,
+  MeasurementForm,
+  MeasurementHistory,
+  MetricsSummary,
+} from '@/features/dashboard'
 
 export const metadata: Metadata = {
   title: 'Meu painel · FitCalculator',
 }
 
-/**
- * Placeholder — proves the auth + role-redirect flow end to end.
- * The real student dashboard (doc section 61-64) is Milestone 4.
- */
 export default async function StudentDashboardPage() {
   const profile = await getCurrentProfile()
   assertRole(profile, ['student'])
+
+  const dashboard = await getStudentDashboard(profile.id)
 
   return (
     <main
@@ -28,6 +34,46 @@ export default async function StudentDashboardPage() {
         </div>
         <LogoutButton />
       </div>
+
+      {!dashboard.onboarded ? (
+        <HealthProfileForm isOnboarding />
+      ) : (
+        <>
+          <MetricsSummary snapshot={dashboard.latestSnapshot} />
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            <MeasurementForm />
+            <GoalForm
+              initialValues={
+                dashboard.activeGoal
+                  ? {
+                      type: dashboard.activeGoal.type,
+                      targetWeightKg: dashboard.activeGoal.targetWeightKg,
+                      calorieAdjustmentPercent: dashboard.activeGoal.calorieAdjustmentPercent,
+                    }
+                  : undefined
+              }
+            />
+          </div>
+
+          <MeasurementHistory measurements={dashboard.measurements} />
+
+          <details className="group">
+            <summary className="cursor-pointer text-sm font-medium text-text-secondary hover:text-primary">
+              Editar perfil de saúde
+            </summary>
+            <div className="mt-4">
+              <HealthProfileForm
+                initialValues={
+                  dashboard.birthDate && dashboard.healthProfile
+                    ? { birthDate: dashboard.birthDate, ...dashboard.healthProfile }
+                    : undefined
+                }
+              />
+            </div>
+          </details>
+        </>
+      )}
     </main>
   )
 }
