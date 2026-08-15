@@ -1,3 +1,4 @@
+export * from './auth.schema'
 export * from './bmi.schema'
 export * from './health-profile.schema'
 export * from './macros.schema'

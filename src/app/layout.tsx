@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { Footer, SiteHeader } from '@/components/layout'
 import './globals.css'
 
 const geistSans = Geist({
@@ -22,6 +21,13 @@ export const metadata: Metadata = {
     'Calcule IMC, TMB, TDEE, meta calórica e macronutrientes de forma simples, num só lugar.',
 }
 
+/**
+ * The true root layout — shared by every route group ((public), (auth),
+ * and eventually (student)/(trainer)), each of which brings its own
+ * header/footer/sidebar chrome around its own `<main id="main-content">`.
+ * Kept minimal on purpose so an auth or dashboard page never inherits
+ * the marketing navbar by accident.
+ */
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
@@ -32,11 +38,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         >
           Pular para o conteúdo
         </a>
-        <SiteHeader />
-        <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col outline-none">
-          {children}
-        </main>
-        <Footer />
+        {children}
       </body>
     </html>
   )

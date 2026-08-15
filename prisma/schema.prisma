@@ -1,0 +1,360 @@
+// FitCalculator — data model.
+// See section 11-33 of the architecture doc for the reasoning behind
+// each table. Model names are PascalCase/camelCase (idiomatic Prisma),
+// mapped via @@map/@map onto the exact snake_case table/column names
+// from the doc, since those are what Supabase's dashboard, RLS
+// policies and any raw SQL will reference directly.
+//
+// `Profile.id` is a UUID that MUST equal the corresponding
+// `auth.users.id` row managed by Supabase Auth. Auth is Supabase's
+// responsibility, not Prisma's — this schema intentionally does not
+// model `auth.users` itself (see the prisma-database-setup skill and
+// Supabase's own guidance: never manage `auth.*` through an ORM
+// migration). The `profiles` row is created by a Postgres trigger on
+// `auth.users` insert (wired up once a real Supabase project exists).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  STUDENT
+  TRAINER
+  ADMIN
+
+  @@map("user_role")
+}
+
+/// The sex parameter the Mifflin-St Jeor formula branches on — not a
+/// statement about gender identity. Mirrors `domain/value-objects/sex.ts`
+/// in the calculation engine, which stays on its own lowercase
+/// ('male' | 'female') convention independent of this DB enum.
+enum BmrSex {
+  MALE
+  FEMALE
+
+  @@map("bmr_sex")
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHT
+  MODERATE
+  ACTIVE
+  VERY_ACTIVE
+
+  @@map("activity_level")
+}
+
+enum MacroStrategy {
+  BALANCED
+  HIGH_PROTEIN
+  LOW_CARB
+  KETO
+  CUSTOM
+
+  @@map("macro_strategy")
+}
+
+enum GoalType {
+  LOSE_WEIGHT
+  MAINTAIN
+  GAIN_WEIGHT
+
+  @@map("goal_type")
+}
+
+/// Only one goal should be ACTIVE per student at a time (enforced in the
+/// application layer, not the database — see `application/students/update-goal.ts`).
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+
+  @@map("goal_status")
+}
+
+enum RelationshipStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+
+  @@map("relationship_status")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+
+  @@map("invitation_status")
+}
+
+// ---------------------------------------------------------------------------
+// Identity
+// ---------------------------------------------------------------------------
+
+model Profile {
+  id        String   @id @db.Uuid
+  fullName  String   @map("full_name")
+  role      UserRole
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  trainerProfile TrainerProfile?
+  studentProfile StudentProfile?
+
+  @@map("profiles")
+}
+
+model TrainerProfile {
+  userId    String   @id @map("user_id") @db.Uuid
+  phone     String?
+  cref      String?
+  bio       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  profile     Profile             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  students    TrainerStudent[]
+  invitations StudentInvitation[]
+
+  @@map("trainer_profiles")
+}
+
+model StudentProfile {
+  userId    String   @id @map("user_id") @db.Uuid
+  birthDate DateTime @map("birth_date") @db.Date
+  phone     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  profile         Profile           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  healthProfile   HealthProfile?
+  measurements    BodyMeasurement[]
+  goals           Goal[]
+  healthSnapshots HealthSnapshot[]
+  trainers        TrainerStudent[]
+
+  @@map("student_profiles")
+}
+
+// ---------------------------------------------------------------------------
+// Trainer <-> Student relationship
+// ---------------------------------------------------------------------------
+
+/// A dedicated join table (not a `trainerId` column on the student) so a
+/// student can — in the future — be linked to more than one trainer
+/// without changing the model. See doc section 22-24.
+model TrainerStudent {
+  id String @id @default(uuid()) @db.Uuid
+
+  trainerId String @map("trainer_id") @db.Uuid
+  studentId String @map("student_id") @db.Uuid
+
+  status RelationshipStatus @default(PENDING)
+
+  startedAt DateTime? @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  trainer TrainerProfile @relation(fields: [trainerId], references: [userId], onDelete: Cascade)
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@unique([trainerId, studentId])
+  @@index([trainerId, status])
+  @@index([studentId, status])
+  @@map("trainer_students")
+}
+
+model StudentInvitation {
+  id String @id @default(uuid()) @db.Uuid
+
+  trainerId String @map("trainer_id") @db.Uuid
+  email     String
+
+  /// The invitation token is a bearer credential — only its hash is
+  /// stored, never the raw token (doc section 26).
+  tokenHash String @map("token_hash")
+
+  status    InvitationStatus @default(PENDING)
+  expiresAt DateTime         @map("expires_at")
+
+  acceptedByStudentId String?   @map("accepted_by_student_id") @db.Uuid
+  acceptedAt          DateTime? @map("accepted_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  trainer TrainerProfile @relation(fields: [trainerId], references: [userId], onDelete: Cascade)
+
+  @@index([tokenHash])
+  @@index([trainerId, status])
+  @@map("student_invitations")
+}
+
+// ---------------------------------------------------------------------------
+// Health data — all owned by the student, regardless of who recorded it
+// ---------------------------------------------------------------------------
+
+model HealthProfile {
+  studentId String @id @map("student_id") @db.Uuid
+
+  heightCm      Decimal       @map("height_cm") @db.Decimal(5, 2)
+  bmrSex        BmrSex        @map("bmr_sex")
+  activityLevel ActivityLevel @map("activity_level")
+  macroStrategy MacroStrategy @map("macro_strategy")
+
+  customProteinPercentage Decimal? @map("custom_protein_percentage") @db.Decimal(5, 2)
+  customCarbsPercentage   Decimal? @map("custom_carbs_percentage") @db.Decimal(5, 2)
+  customFatPercentage     Decimal? @map("custom_fat_percentage") @db.Decimal(5, 2)
+
+  /// Who last edited this profile — the student themself, or a trainer.
+  updatedBy String @map("updated_by") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("health_profiles")
+}
+
+/// Weight is a measurement, not a profile field — it changes over time
+/// and every change is meaningful, so it's append-only (doc section 17,
+/// principle #5/#6 in section 113: never overwrite, never delete).
+model BodyMeasurement {
+  id String @id @default(uuid()) @db.Uuid
+
+  studentId String @map("student_id") @db.Uuid
+
+  weightKg          Decimal  @map("weight_kg") @db.Decimal(5, 2)
+  bodyFatPercentage Decimal? @map("body_fat_percentage") @db.Decimal(5, 2)
+  waistCm           Decimal? @map("waist_cm") @db.Decimal(5, 2)
+
+  recordedAt DateTime @map("recorded_at")
+  /// The student themself, or the trainer who logged it for them (doc section 18).
+  recordedBy String   @map("recorded_by") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  student   StudentProfile   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  snapshots HealthSnapshot[]
+
+  @@index([studentId, recordedAt(sort: Desc)])
+  @@map("body_measurements")
+}
+
+model Goal {
+  id String @id @default(uuid()) @db.Uuid
+
+  studentId String @map("student_id") @db.Uuid
+
+  type GoalType
+
+  targetWeightKg Decimal? @map("target_weight_kg") @db.Decimal(5, 2)
+
+  /// Signed percentage applied to TDEE — negative for a deficit, positive
+  /// for a surplus. Always explicit, never a constant baked into a formula
+  /// (matches the domain layer's `calculateCalorieTarget`).
+  calorieAdjustmentPercent Decimal @map("calorie_adjustment_percent") @db.Decimal(5, 2)
+
+  status GoalStatus @default(ACTIVE)
+
+  startedAt DateTime  @default(now()) @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+
+  createdBy String   @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  student   StudentProfile   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  snapshots HealthSnapshot[]
+
+  @@index([studentId, status])
+  @@map("goals")
+}
+
+/// The computed state of a student's indicators at one point in time.
+/// Exists so a trainer dashboard listing many students never has to
+/// recompute BMI/TDEE/macros on the fly — it reads the latest snapshot.
+/// Immutable: a new measurement, goal, or profile change always INSERTs
+/// a new snapshot, never UPDATEs an old one (doc section 32-38, principle #7).
+model HealthSnapshot {
+  id String @id @default(uuid()) @db.Uuid
+
+  studentId     String  @map("student_id") @db.Uuid
+  measurementId String  @map("measurement_id") @db.Uuid
+  goalId        String? @map("goal_id") @db.Uuid
+
+  bmi               Decimal @db.Decimal(5, 2)
+  bmiClassification String  @map("bmi_classification")
+
+  bmrKcal  Int @map("bmr_kcal")
+  tdeeKcal Int @map("tdee_kcal")
+
+  calorieTargetKcal Int @map("calorie_target_kcal")
+
+  proteinG Decimal @map("protein_g") @db.Decimal(6, 2)
+  carbsG   Decimal @map("carbs_g") @db.Decimal(6, 2)
+  fatG     Decimal @map("fat_g") @db.Decimal(6, 2)
+
+  bmiFormulaVersion   String @map("bmi_formula_version")
+  bmrFormulaVersion   String @map("bmr_formula_version")
+  tdeeFormulaVersion  String @map("tdee_formula_version")
+  macroFormulaVersion String @map("macro_formula_version")
+
+  /// The exact inputs `calculateHealthMetrics` was called with — enough
+  /// to audit or reproduce this snapshot without re-deriving it from
+  /// (possibly since-changed) profile/measurement/goal rows.
+  inputSnapshot Json @map("input_snapshot")
+
+  createdBy String   @map("created_by") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  student     StudentProfile  @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  measurement BodyMeasurement @relation(fields: [measurementId], references: [id], onDelete: Restrict)
+  goal        Goal?           @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@index([studentId, createdAt(sort: Desc)])
+  @@map("health_snapshots")
+}
+
+// ---------------------------------------------------------------------------
+// Audit
+// ---------------------------------------------------------------------------
+
+/// Every mutation a trainer makes on a student's data gets one row here.
+/// Students editing their own data are logged too, for a complete trail.
+model AuditLog {
+  id String @id @default(uuid()) @db.Uuid
+
+  actorUserId String  @map("actor_user_id") @db.Uuid
+  studentId   String? @map("student_id") @db.Uuid
+
+  action String
+
+  entityType String @map("entity_type")
+  entityId   String @map("entity_id") @db.Uuid
+
+  beforeData Json? @map("before_data")
+  afterData  Json? @map("after_data")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([studentId, createdAt(sort: Desc)])
+  @@index([actorUserId, createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
