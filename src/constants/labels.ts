@@ -1,6 +1,7 @@
 import type { BmiClassification } from '@/domain/calculations/bmi'
 import type { ActivityLevel } from '@/domain/value-objects/activity-level'
 import type { Goal } from '@/domain/value-objects/goal'
+import type { InvitationStatus } from '@/domain/value-objects/invitation-status'
 import type { MacroStrategy } from '@/domain/value-objects/macro-strategy'
 import type { Sex } from '@/domain/value-objects/sex'
 
@@ -44,4 +45,11 @@ export const BMI_CLASSIFICATION_LABELS: Record<BmiClassification, string> = {
   obese_class_1: 'Obesidade grau I',
   obese_class_2: 'Obesidade grau II',
   obese_class_3: 'Obesidade grau III',
+}
+
+export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
+  pending: 'Aguardando resposta',
+  accepted: 'Aceito',
+  expired: 'Expirado',
+  cancelled: 'Cancelado',
 }

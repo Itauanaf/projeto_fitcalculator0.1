@@ -80,6 +80,13 @@ export interface NewSnapshotInput {
  * just move that coupling into every caller instead of removing it.
  */
 export interface StudentHealthRepository {
+  /**
+   * Creates an empty `student_profiles` row (no birth date yet) if one
+   * doesn't exist — `TrainerStudent.student` FKs into this table, so a
+   * trainer must be able to link a student who hasn't completed their
+   * health-profile onboarding yet (see `accept-invitation.ts`).
+   */
+  ensureStudentProfile(studentId: string): Promise<void>
   getBirthDate(studentId: string): Promise<Date | null>
   getHealthProfile(studentId: string): Promise<StudentHealthProfileRecord | null>
 

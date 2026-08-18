@@ -32,6 +32,14 @@ const toDbMacroStrategy = (strategy: MacroStrategy): DbMacroStrategy =>
   strategy.toUpperCase() as DbMacroStrategy
 
 export class PrismaStudentHealthRepository implements StudentHealthRepository {
+  async ensureStudentProfile(studentId: string): Promise<void> {
+    await prisma.studentProfile.upsert({
+      where: { userId: studentId },
+      create: { userId: studentId },
+      update: {},
+    })
+  }
+
   async getBirthDate(studentId: string): Promise<Date | null> {
     const row = await prisma.studentProfile.findUnique({
       where: { userId: studentId },

@@ -134,11 +134,18 @@ model TrainerProfile {
 }
 
 model StudentProfile {
-  userId    String   @id @map("user_id") @db.Uuid
-  birthDate DateTime @map("birth_date") @db.Date
+  userId String @id @map("user_id") @db.Uuid
+  /// Nullable: a `student_profiles` row can exist before onboarding is
+  /// complete — e.g. accepting a trainer's invite creates one with no
+  /// birth date yet, since `TrainerStudent.student` FKs into this table
+  /// and a trainer must be able to invite a student who hasn't filled in
+  /// their health profile yet. `getStudentDashboard`'s `onboarded` flag
+  /// (birthDate !== null && healthProfile !== null) is what actually
+  /// gates the rest of the student experience, not this row's existence.
+  birthDate DateTime? @map("birth_date") @db.Date
   phone     String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
 
   profile         Profile           @relation(fields: [userId], references: [id], onDelete: Cascade)
   healthProfile   HealthProfile?

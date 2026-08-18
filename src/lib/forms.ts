@@ -7,3 +7,12 @@
 export function asOptionalNumber(raw: string): number | undefined {
   return raw === '' ? undefined : Number(raw)
 }
+
+/**
+ * Normalizes an optional text field's empty string to `undefined` before
+ * persisting — an untouched optional input still submits `''`, and a
+ * repository/DB column should store "not provided", not an empty string.
+ */
+export function emptyToUndefined(value: string | undefined): string | undefined {
+  return value === '' ? undefined : value
+}
