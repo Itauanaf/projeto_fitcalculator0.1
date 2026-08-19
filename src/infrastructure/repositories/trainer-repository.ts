@@ -1,4 +1,5 @@
 import type { CheckInFrequency } from '@/domain/value-objects/check-in-frequency'
+import type { Goal } from '@/domain/value-objects/goal'
 import type { InvitationStatus } from '@/domain/value-objects/invitation-status'
 import type { StudentSnapshotRecord } from './student-health-repository'
 
@@ -32,6 +33,26 @@ export interface CheckInSchedule {
   nextCheckInAt?: Date
 }
 
+export interface RecentMeasurement {
+  id: string
+  weightKg: number
+  recordedAt: Date
+}
+
+export interface RecentCheckIn {
+  id: string
+  measurementId: string
+  weightKg: number
+  nutritionAdherencePercentage: number
+  submittedAt: Date
+}
+
+export interface RecentGoal {
+  id: string
+  type: Goal
+  startedAt: Date
+}
+
 export interface LinkedStudentRecord {
   studentId: string
   fullName: string
@@ -40,14 +61,22 @@ export interface LinkedStudentRecord {
   checkInFrequency: CheckInFrequency
   lastCheckInAt?: Date
   nextCheckInAt?: Date
+  hasHealthProfile: boolean
+  /** Newest first — enough recent history for the "sem atualização"/"mudança de peso" checks and the activity feed. */
+  recentMeasurements: RecentMeasurement[]
+  recentCheckIns: RecentCheckIn[]
+  recentGoals: RecentGoal[]
+  /** Only the fields `calculateGoalProgress` needs — `undefined` when there's no active goal or it has no target weight. */
+  activeGoal?: { initialWeightKg?: number; targetWeightKg?: number }
 }
 
 /**
  * Port for everything the trainer dashboard reads and writes: the
  * trainer's own profile, the invitations they've sent, and the
  * students actively linked to them (with each student's latest
- * computed snapshot, so the dashboard never has to recompute anything
- * — see `HealthSnapshot`'s doc comment on why it exists).
+ * computed snapshot and enough recent history for the dashboard to
+ * derive attention flags and an activity feed without a second round
+ * of queries — see `HealthSnapshot`'s doc comment on why it exists).
  */
 export interface TrainerRepository {
   /** Creates an empty `trainer_profiles` row if one doesn't exist yet — invitations and links FK into it. */

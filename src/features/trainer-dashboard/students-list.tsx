@@ -1,18 +1,23 @@
 import { ChevronRight, Users } from 'lucide-react'
 import Link from 'next/link'
+import type { StudentSummary } from '@/application/trainers/get-trainer-dashboard'
 import { Avatar, Badge, Card, SectionHeader } from '@/components/ui'
-import { BMI_CLASSIFICATION_LABELS, BMI_CLASSIFICATION_TONE } from '@/constants/labels'
-import type { LinkedStudentRecord } from '@/infrastructure/repositories/trainer-repository'
+import {
+  BMI_CLASSIFICATION_LABELS,
+  BMI_CLASSIFICATION_TONE,
+  STUDENT_STATUS_LABELS,
+  STUDENT_STATUS_TONE,
+} from '@/constants/labels'
 
 function formatKcal(value: number): string {
   return `${value.toLocaleString('pt-BR')} kcal`
 }
 
 interface StudentsListProps {
-  students: LinkedStudentRecord[]
+  students: StudentSummary[]
 }
 
-/** Every student actively linked to this trainer, each with their latest computed snapshot (no recomputation here). */
+/** Every student actively linked to this trainer, each with their latest computed snapshot (no recomputation here) and a status badge. */
 export function StudentsList({ students }: StudentsListProps) {
   if (students.length === 0) {
     return (
@@ -46,6 +51,10 @@ export function StudentsList({ students }: StudentsListProps) {
                 aria-hidden="true"
               />
             </div>
+
+            <Badge tone={STUDENT_STATUS_TONE[student.status]} className="w-fit">
+              {STUDENT_STATUS_LABELS[student.status]}
+            </Badge>
 
             {student.latestSnapshot ? (
               <div className="flex flex-col gap-2">

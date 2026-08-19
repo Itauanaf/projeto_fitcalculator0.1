@@ -1,8 +1,11 @@
 import type { BmiClassification } from '@/domain/calculations/bmi'
 import { calculateNextCheckInDate } from '@/domain/calculations/check-in-schedule'
 import type { CheckInFrequency } from '@/domain/value-objects/check-in-frequency'
+import type { Goal } from '@/domain/value-objects/goal'
 import {
   CheckInFrequency as DbCheckInFrequency,
+  GoalStatus as DbGoalStatus,
+  type GoalType as DbGoalType,
   InvitationStatus as DbInvitationStatus,
   RelationshipStatus as DbRelationshipStatus,
 } from '@/generated/prisma/client'
@@ -22,6 +25,7 @@ const toDomainCheckInFrequency = (frequency: DbCheckInFrequency): CheckInFrequen
   frequency.toLowerCase() as CheckInFrequency
 const toDbCheckInFrequency = (frequency: CheckInFrequency): DbCheckInFrequency =>
   frequency.toUpperCase() as DbCheckInFrequency
+const toDomainGoalType = (type: DbGoalType): Goal => type.toLowerCase() as Goal
 
 export class PrismaTrainerRepository implements TrainerRepository {
   async ensureTrainerProfile(trainerId: string): Promise<void> {
@@ -162,7 +166,18 @@ export class PrismaTrainerRepository implements TrainerRepository {
         student: {
           include: {
             profile: true,
+            healthProfile: { select: { studentId: true } },
             healthSnapshots: { orderBy: { createdAt: 'desc' }, take: 1 },
+            // Enough recent history for the "sem atualização"/"mudança de
+            // peso" attention flags and the trainer's activity feed —
+            // not the student's full history (see `getStudentDetail` for that).
+            measurements: { orderBy: { recordedAt: 'desc' }, take: 10 },
+            checkIns: {
+              orderBy: { submittedAt: 'desc' },
+              take: 3,
+              include: { measurement: { select: { weightKg: true } } },
+            },
+            goals: { orderBy: { startedAt: 'desc' }, take: 5 },
           },
         },
       },
@@ -170,6 +185,7 @@ export class PrismaTrainerRepository implements TrainerRepository {
 
     return rows.map((row) => {
       const snapshot = row.student.healthSnapshots[0]
+      const activeGoalRow = row.student.goals.find((goal) => goal.status === DbGoalStatus.ACTIVE)
 
       return {
         studentId: row.studentId,
@@ -192,6 +208,30 @@ export class PrismaTrainerRepository implements TrainerRepository {
         checkInFrequency: toDomainCheckInFrequency(row.checkInFrequency),
         lastCheckInAt: row.lastCheckInAt ?? undefined,
         nextCheckInAt: row.nextCheckInAt ?? undefined,
+        hasHealthProfile: row.student.healthProfile !== null,
+        recentMeasurements: row.student.measurements.map((m) => ({
+          id: m.id,
+          weightKg: m.weightKg.toNumber(),
+          recordedAt: m.recordedAt,
+        })),
+        recentCheckIns: row.student.checkIns.map((c) => ({
+          id: c.id,
+          measurementId: c.measurementId,
+          weightKg: c.measurement.weightKg.toNumber(),
+          nutritionAdherencePercentage: c.nutritionAdherencePercentage,
+          submittedAt: c.submittedAt,
+        })),
+        recentGoals: row.student.goals.map((g) => ({
+          id: g.id,
+          type: toDomainGoalType(g.type),
+          startedAt: g.startedAt,
+        })),
+        activeGoal: activeGoalRow
+          ? {
+              initialWeightKg: activeGoalRow.initialWeightKg?.toNumber(),
+              targetWeightKg: activeGoalRow.targetWeightKg?.toNumber(),
+            }
+          : undefined,
       }
     })
   }

@@ -1,3 +1,4 @@
+import type { AttentionFlagKind, StudentStatus } from '@/domain/calculations/attention-flags'
 import type { BmiClassification } from '@/domain/calculations/bmi'
 import type { ActivityLevel } from '@/domain/value-objects/activity-level'
 import type { CheckInFrequency } from '@/domain/value-objects/check-in-frequency'
@@ -79,4 +80,36 @@ export const CHECK_IN_FREQUENCY_LABELS: Record<CheckInFrequency, string> = {
   biweekly: 'A cada 15 dias',
   monthly: 'Mensal',
   manual: 'Manual',
+}
+
+/** Deliberately operational wording, not medical — see `AttentionFlagKind`'s doc comment. */
+export const STUDENT_STATUS_LABELS: Record<StudentStatus, string> = {
+  active: 'Ativo',
+  no_updates: 'Sem atualização',
+  goal_reached: 'Meta atingida',
+}
+
+export const STUDENT_STATUS_TONE: Record<StudentStatus, BadgeTone> = {
+  active: 'success',
+  no_updates: 'warning',
+  goal_reached: 'success',
+}
+
+/** One-line description for each attention-flag kind — "Precisam de atenção" and the activity feed read from this. */
+export const ATTENTION_FLAG_LABELS: Record<
+  AttentionFlagKind,
+  (flag: { days?: number; weightChangeKg?: number; percent?: number }) => string
+> = {
+  no_check_in: (flag) => `Sem check-in há ${flag.days} ${flag.days === 1 ? 'dia' : 'dias'}`,
+  no_weight_update: (flag) =>
+    `Sem atualizar peso há ${flag.days} ${flag.days === 1 ? 'dia' : 'dias'}`,
+  weight_change: (flag) => {
+    const kg = flag.weightChangeKg ?? 0
+    const formatted = `${kg > 0 ? '+' : ''}${kg.toFixed(1).replace('.', ',')}kg`
+    return `Peso alterou ${formatted} em ${flag.days} dias`
+  },
+  incomplete_profile: () => 'Perfil incompleto',
+  goal_reached: () => 'Meta atingida',
+  near_goal: (flag) => `Próximo da meta (${flag.percent}% concluído)`,
+  low_adherence: (flag) => `Baixa aderência recorrente (média de ${flag.percent}%)`,
 }

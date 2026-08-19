@@ -1,4 +1,4 @@
-import { CheckCircle2, ClipboardCheck, Clock, Users } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ClipboardCheck, Clock, Trophy, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import { assertRole } from '@/application/authorization/assert-role'
 import { getCurrentProfile } from '@/application/authorization/get-current-profile'
@@ -6,8 +6,10 @@ import { getTrainerDashboard } from '@/application/trainers/get-trainer-dashboar
 import { Avatar, StatCard } from '@/components/ui'
 import { LogoutButton } from '@/features/auth/logout-button'
 import {
+  AttentionSection,
   InvitationsList,
   InviteStudentForm,
+  RecentActivityFeed,
   StudentsList,
   TrainerProfileForm,
 } from '@/features/trainer-dashboard'
@@ -43,13 +45,23 @@ export default async function TrainerDashboardPage() {
         <LogoutButton />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard icon={Users} label="Alunos ativos" value={String(dashboard.students.length)} />
         <StatCard
           icon={ClipboardCheck}
           label="Novos check-ins"
           value={String(dashboard.newCheckInsCount)}
           hint="Últimos 7 dias"
+        />
+        <StatCard
+          icon={AlertTriangle}
+          label="Precisam de atenção"
+          value={String(dashboard.needsAttentionCount)}
+        />
+        <StatCard
+          icon={Trophy}
+          label="Metas atingidas"
+          value={String(dashboard.goalsReachedCount)}
         />
         <StatCard icon={Clock} label="Convites pendentes" value={String(pendingInvitations)} />
         <StatCard
@@ -59,8 +71,13 @@ export default async function TrainerDashboardPage() {
         />
       </div>
 
+      <AttentionSection items={dashboard.attentionItems} />
+
       <InviteStudentForm />
       <StudentsList students={dashboard.students} />
+
+      <RecentActivityFeed entries={dashboard.activityFeed} />
+
       <InvitationsList invitations={dashboard.invitations} />
 
       <details className="group">
