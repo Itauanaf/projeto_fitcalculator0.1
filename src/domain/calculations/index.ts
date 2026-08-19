@@ -1,6 +1,7 @@
 export * from './bmi'
 export * from './bmr'
 export * from './calories'
+export * from './check-in-schedule'
 export * from './goal-progress'
 export * from './health-metrics'
 export * from './macros'

@@ -1,3 +1,4 @@
+import type { CheckInFrequency } from '@/domain/value-objects/check-in-frequency'
 import type { InvitationStatus } from '@/domain/value-objects/invitation-status'
 import type { StudentSnapshotRecord } from './student-health-repository'
 
@@ -25,11 +26,20 @@ export interface InvitationLookup {
   expiresAt: Date
 }
 
+export interface CheckInSchedule {
+  frequency: CheckInFrequency
+  lastCheckInAt?: Date
+  nextCheckInAt?: Date
+}
+
 export interface LinkedStudentRecord {
   studentId: string
   fullName: string
   startedAt: Date
   latestSnapshot: StudentSnapshotRecord | null
+  checkInFrequency: CheckInFrequency
+  lastCheckInAt?: Date
+  nextCheckInAt?: Date
 }
 
 /**
@@ -59,4 +69,21 @@ export interface TrainerRepository {
 
   /** Whether this trainer has an active link to this student — the only relationship that grants access to their data. */
   isActivelyLinked(trainerId: string, studentId: string): Promise<boolean>
+
+  /** Sets the check-in cadence for this trainer↔student link and recomputes `nextCheckInAt` from it. */
+  setCheckInFrequency(
+    trainerId: string,
+    studentId: string,
+    frequency: CheckInFrequency
+  ): Promise<void>
+
+  /**
+   * Stamps `lastCheckInAt`/`nextCheckInAt` on every active trainer link
+   * this student has (normally at most one) — called right after a
+   * check-in is submitted, from the student side.
+   */
+  recordCheckInCompleted(studentId: string, submittedAt: Date): Promise<void>
+
+  /** The check-in cadence for this student, from their (first) active trainer link — `null` if they have no trainer. */
+  getCheckInScheduleForStudent(studentId: string): Promise<CheckInSchedule | null>
 }

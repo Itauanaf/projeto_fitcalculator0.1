@@ -15,6 +15,7 @@ import {
 } from '@/generated/prisma/client'
 import type {
   NewSnapshotInput,
+  StudentCheckInRecord,
   StudentGoalRecord,
   StudentHealthProfileRecord,
   StudentHealthRepository,
@@ -270,5 +271,90 @@ export class PrismaStudentHealthRepository implements StudentHealthRepository {
       fatG: row.fatG.toNumber(),
       createdAt: row.createdAt,
     }
+  }
+
+  async listCheckIns(studentId: string, limit = 20): Promise<StudentCheckInRecord[]> {
+    const rows = await prisma.studentCheckIn.findMany({
+      where: { studentId },
+      orderBy: { submittedAt: 'desc' },
+      take: limit,
+      include: { measurement: { select: { weightKg: true } } },
+    })
+
+    return rows.map((row) => ({
+      id: row.id,
+      measurementId: row.measurementId,
+      weightKg: row.measurement.weightKg.toNumber(),
+      energyLevel: row.energyLevel,
+      hungerLevel: row.hungerLevel,
+      sleepQuality: row.sleepQuality,
+      workoutsCompleted: row.workoutsCompleted,
+      nutritionAdherencePercentage: row.nutritionAdherencePercentage,
+      notes: row.notes ?? undefined,
+      submittedAt: row.submittedAt,
+    }))
+  }
+
+  async addCheckIn(
+    studentId: string,
+    input: {
+      weightKg: number
+      energyLevel: number
+      hungerLevel: number
+      sleepQuality: number
+      workoutsCompleted: number
+      nutritionAdherencePercentage: number
+      notes?: string
+      recordedBy: string
+    }
+  ): Promise<{ measurement: StudentMeasurementRecord; checkIn: StudentCheckInRecord }> {
+    // An interactive transaction — the check-in's `measurementId` needs
+    // the measurement's generated id, so the two writes can't be
+    // prepared independently the way the array form requires.
+    return prisma.$transaction(async (tx) => {
+      const measurementRow = await tx.bodyMeasurement.create({
+        data: {
+          studentId,
+          weightKg: input.weightKg,
+          recordedAt: new Date(),
+          recordedBy: input.recordedBy,
+        },
+      })
+
+      const checkInRow = await tx.studentCheckIn.create({
+        data: {
+          studentId,
+          measurementId: measurementRow.id,
+          energyLevel: input.energyLevel,
+          hungerLevel: input.hungerLevel,
+          sleepQuality: input.sleepQuality,
+          workoutsCompleted: input.workoutsCompleted,
+          nutritionAdherencePercentage: input.nutritionAdherencePercentage,
+          notes: input.notes,
+        },
+      })
+
+      return {
+        measurement: {
+          id: measurementRow.id,
+          weightKg: measurementRow.weightKg.toNumber(),
+          bodyFatPercentage: measurementRow.bodyFatPercentage?.toNumber(),
+          waistCm: measurementRow.waistCm?.toNumber(),
+          recordedAt: measurementRow.recordedAt,
+        },
+        checkIn: {
+          id: checkInRow.id,
+          measurementId: checkInRow.measurementId,
+          weightKg: measurementRow.weightKg.toNumber(),
+          energyLevel: checkInRow.energyLevel,
+          hungerLevel: checkInRow.hungerLevel,
+          sleepQuality: checkInRow.sleepQuality,
+          workoutsCompleted: checkInRow.workoutsCompleted,
+          nutritionAdherencePercentage: checkInRow.nutritionAdherencePercentage,
+          notes: checkInRow.notes ?? undefined,
+          submittedAt: checkInRow.submittedAt,
+        },
+      }
+    })
   }
 }

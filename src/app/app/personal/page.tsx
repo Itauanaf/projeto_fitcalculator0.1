@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, Users } from 'lucide-react'
+import { CheckCircle2, ClipboardCheck, Clock, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import { assertRole } from '@/application/authorization/assert-role'
 import { getCurrentProfile } from '@/application/authorization/get-current-profile'
@@ -43,8 +43,14 @@ export default async function TrainerDashboardPage() {
         <LogoutButton />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={Users} label="Alunos ativos" value={String(dashboard.students.length)} />
+        <StatCard
+          icon={ClipboardCheck}
+          label="Novos check-ins"
+          value={String(dashboard.newCheckInsCount)}
+          hint="Últimos 7 dias"
+        />
         <StatCard icon={Clock} label="Convites pendentes" value={String(pendingInvitations)} />
         <StatCard
           icon={CheckCircle2}

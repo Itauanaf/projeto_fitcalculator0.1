@@ -1,5 +1,6 @@
 import type { BmiClassification } from '@/domain/calculations/bmi'
 import type { ActivityLevel } from '@/domain/value-objects/activity-level'
+import type { CheckInFrequency } from '@/domain/value-objects/check-in-frequency'
 import type { Goal } from '@/domain/value-objects/goal'
 import type { InvitationStatus } from '@/domain/value-objects/invitation-status'
 import type { MacroStrategy } from '@/domain/value-objects/macro-strategy'
@@ -71,4 +72,11 @@ export const INVITATION_STATUS_TONE: Record<InvitationStatus, BadgeTone> = {
   accepted: 'success',
   expired: 'neutral',
   cancelled: 'neutral',
+}
+
+export const CHECK_IN_FREQUENCY_LABELS: Record<CheckInFrequency, string> = {
+  weekly: 'Semanal',
+  biweekly: 'A cada 15 dias',
+  monthly: 'Mensal',
+  manual: 'Manual',
 }

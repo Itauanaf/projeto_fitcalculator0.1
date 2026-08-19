@@ -13,7 +13,11 @@ import {
   MetricsSummary,
   WeightEvolutionChart,
 } from '@/features/dashboard'
-import { StudentGoalCard, StudentProfileCard } from '@/features/trainer-dashboard'
+import {
+  CheckInFrequencyForm,
+  StudentGoalCard,
+  StudentProfileCard,
+} from '@/features/trainer-dashboard'
 import { buildStudentTimeline } from '@/lib/timeline'
 
 export const metadata: Metadata = {
@@ -68,9 +72,13 @@ export default async function StudentDetailPage({
         <StudentGoalCard goal={detail.activeGoal} />
       </div>
 
+      <CheckInFrequencyForm studentId={studentId} schedule={detail.checkInSchedule} />
+
       <MeasurementHistory measurements={detail.measurements} />
 
-      <EvolutionTimeline entries={buildStudentTimeline(detail.measurements, detail.goals)} />
+      <EvolutionTimeline
+        entries={buildStudentTimeline(detail.measurements, detail.goals, detail.checkIns)}
+      />
     </main>
   )
 }

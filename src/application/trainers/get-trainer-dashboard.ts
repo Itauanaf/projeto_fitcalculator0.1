@@ -5,10 +5,15 @@ import type {
   TrainerProfileRecord,
 } from '@/infrastructure/repositories/trainer-repository'
 
+/** A check-in counts as "new" on the dashboard if it landed within this many days — there's no read/unread tracking, so this is the simplest honest definition. */
+const NEW_CHECK_IN_WINDOW_DAYS = 7
+
 export interface TrainerDashboardData {
   trainerProfile: TrainerProfileRecord | null
   invitations: StudentInvitationRecord[]
   students: LinkedStudentRecord[]
+  /** Students whose last check-in landed within the last 7 days. */
+  newCheckInsCount: number
 }
 
 /**
@@ -27,5 +32,10 @@ export async function getTrainerDashboard(trainerId: string): Promise<TrainerDas
     repo.listActiveStudents(trainerId),
   ])
 
-  return { trainerProfile, invitations, students }
+  const windowStart = Date.now() - NEW_CHECK_IN_WINDOW_DAYS * 24 * 60 * 60 * 1000
+  const newCheckInsCount = students.filter(
+    (student) => student.lastCheckInAt && student.lastCheckInAt.getTime() >= windowStart
+  ).length
+
+  return { trainerProfile, invitations, students, newCheckInsCount }
 }

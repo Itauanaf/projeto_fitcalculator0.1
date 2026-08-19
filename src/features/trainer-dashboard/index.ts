@@ -1,4 +1,5 @@
 export * from './accept-invitation-button'
+export * from './check-in-frequency-form'
 export * from './invitations-list'
 export * from './invite-student-form'
 export * from './student-goal-card'

@@ -55,6 +55,20 @@ export interface StudentSnapshotRecord {
   createdAt: Date
 }
 
+export interface StudentCheckInRecord {
+  id: string
+  measurementId: string
+  /** Denormalized from the linked measurement — convenient for display without a second lookup. */
+  weightKg: number
+  energyLevel: number
+  hungerLevel: number
+  sleepQuality: number
+  workoutsCompleted: number
+  nutritionAdherencePercentage: number
+  notes?: string
+  submittedAt: Date
+}
+
 export interface NewSnapshotInput {
   measurementId: string
   goalId?: string
@@ -128,4 +142,21 @@ export interface StudentHealthRepository {
 
   getLatestSnapshot(studentId: string): Promise<StudentSnapshotRecord | null>
   addSnapshot(studentId: string, input: NewSnapshotInput): Promise<StudentSnapshotRecord>
+
+  /** Every check-in this student has ever submitted, newest first. */
+  listCheckIns(studentId: string, limit?: number): Promise<StudentCheckInRecord[]>
+  /** Creates the `BodyMeasurement` (the weight) and the `StudentCheckIn` (everything else) in one write. */
+  addCheckIn(
+    studentId: string,
+    input: {
+      weightKg: number
+      energyLevel: number
+      hungerLevel: number
+      sleepQuality: number
+      workoutsCompleted: number
+      nutritionAdherencePercentage: number
+      notes?: string
+      recordedBy: string
+    }
+  ): Promise<{ measurement: StudentMeasurementRecord; checkIn: StudentCheckInRecord }>
 }

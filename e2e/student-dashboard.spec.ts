@@ -65,8 +65,13 @@ test('completing the profile, logging a measurement and setting a goal produces 
     page.getByText('Registre sua primeira medição abaixo para ver seu IMC, TDEE e macros.')
   ).toBeVisible()
 
-  await page.getByLabel('Peso (kg)').fill(String(WEIGHT_KG))
-  await page.getByRole('button', { name: 'Registrar medição' }).click()
+  // Scoped to the measurement form — the check-in form (added later on
+  // this same page) also has a "Peso (kg)" field.
+  const measurementForm = page.locator('form').filter({
+    has: page.getByRole('button', { name: 'Registrar medição' }),
+  })
+  await measurementForm.getByLabel('Peso (kg)').fill(String(WEIGHT_KG))
+  await measurementForm.getByRole('button', { name: 'Registrar medição' }).click()
 
   // BMI = 80 / 1.80² = 24.69, independent of age/activity/goal. Shown twice
   // (the KPI tile and the BMI gauge card both display it).
@@ -111,8 +116,8 @@ test('completing the profile, logging a measurement and setting a goal produces 
   await expect(page.getByText('0% concluído')).toBeVisible()
 
   // Logging a second, lower weight advances progress: (80-78)/(80-75) = 40%.
-  await page.getByLabel('Peso (kg)').fill('78')
-  await page.getByRole('button', { name: 'Registrar medição' }).click()
+  await measurementForm.getByLabel('Peso (kg)').fill('78')
+  await measurementForm.getByRole('button', { name: 'Registrar medição' }).click()
 
   await expect(page.getByText('40% concluído')).toBeVisible({ timeout: 15000 })
   await expect(page.getByText('-2,0kg desde o início.')).toBeVisible()
@@ -128,4 +133,27 @@ test('completing the profile, logging a measurement and setting a goal produces 
 
   // The target date round-trips through the goal form correctly (UTC-anchored, no off-by-one).
   await expect(page.getByLabel('Prazo')).toHaveValue('2027-01-01')
+
+  // A check-in creates a measurement + records the subjective fields in
+  // one go — represented as a single timeline entry, not two.
+  const checkInForm = page.locator('form').filter({
+    has: page.getByRole('button', { name: 'Enviar check-in' }),
+  })
+  await checkInForm.getByLabel('Peso (kg)').fill('76')
+  const ratingGroups = await checkInForm.getByRole('radiogroup').all()
+  await ratingGroups[0].getByRole('radio', { name: '5 de 5' }).click() // energia
+  await ratingGroups[1].getByRole('radio', { name: '2 de 5' }).click() // fome
+  await ratingGroups[2].getByRole('radio', { name: '4 de 5' }).click() // sono
+  await checkInForm.getByLabel('Treinos realizados na semana').fill('5')
+  await checkInForm.getByLabel('Aderência à alimentação').fill('90')
+  await checkInForm.getByRole('button', { name: 'Enviar check-in' }).click()
+
+  await expect(checkInForm.getByText('Check-in registrado.')).toBeVisible({ timeout: 15000 })
+  // (80-76)/(80-75) = 80%.
+  await expect(page.getByText('80% concluído')).toBeVisible()
+  await expect(
+    page.getByText('Novo check-in — Peso: 76,0kg · Energia 5/5 · Sono 4/5 · Aderência 90%')
+  ).toBeVisible()
+  // The check-in's own measurement isn't also listed as a separate "Nova medição" entry.
+  await expect(page.getByText('Nova medição — Peso: 76,0kg')).toHaveCount(0)
 })

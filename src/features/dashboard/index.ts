@@ -1,3 +1,5 @@
+export * from './check-in-form'
+export * from './check-in-pending-banner'
 export * from './evolution-timeline'
 export * from './goal-form'
 export * from './goal-progress-card'

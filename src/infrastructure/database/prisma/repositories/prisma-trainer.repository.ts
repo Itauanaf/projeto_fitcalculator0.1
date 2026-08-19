@@ -1,9 +1,13 @@
 import type { BmiClassification } from '@/domain/calculations/bmi'
+import { calculateNextCheckInDate } from '@/domain/calculations/check-in-schedule'
+import type { CheckInFrequency } from '@/domain/value-objects/check-in-frequency'
 import {
+  CheckInFrequency as DbCheckInFrequency,
   InvitationStatus as DbInvitationStatus,
   RelationshipStatus as DbRelationshipStatus,
 } from '@/generated/prisma/client'
 import type {
+  CheckInSchedule,
   InvitationLookup,
   LinkedStudentRecord,
   StudentInvitationRecord,
@@ -14,6 +18,10 @@ import { prisma } from '../client'
 
 const toDomainInvitationStatus = (status: DbInvitationStatus) =>
   status.toLowerCase() as StudentInvitationRecord['status']
+const toDomainCheckInFrequency = (frequency: DbCheckInFrequency): CheckInFrequency =>
+  frequency.toLowerCase() as CheckInFrequency
+const toDbCheckInFrequency = (frequency: CheckInFrequency): DbCheckInFrequency =>
+  frequency.toUpperCase() as DbCheckInFrequency
 
 export class PrismaTrainerRepository implements TrainerRepository {
   async ensureTrainerProfile(trainerId: string): Promise<void> {
@@ -112,6 +120,12 @@ export class PrismaTrainerRepository implements TrainerRepository {
     trainerId: string,
     studentId: string
   ): Promise<void> {
+    const startedAt = new Date()
+    // Matches `checkInFrequency`'s own schema default (`WEEKLY`) — without
+    // this, a fresh link would sit at `nextCheckInAt: null` ("not_scheduled")
+    // until the trainer explicitly saved a frequency once.
+    const nextCheckInAt = calculateNextCheckInDate('weekly', startedAt)
+
     await prisma.$transaction([
       prisma.studentInvitation.update({
         where: { id: invitationId },
@@ -127,12 +141,14 @@ export class PrismaTrainerRepository implements TrainerRepository {
           trainerId,
           studentId,
           status: DbRelationshipStatus.ACTIVE,
-          startedAt: new Date(),
+          startedAt,
+          nextCheckInAt,
         },
         update: {
           status: DbRelationshipStatus.ACTIVE,
-          startedAt: new Date(),
+          startedAt,
           endedAt: null,
+          nextCheckInAt,
         },
       }),
     ])
@@ -173,6 +189,9 @@ export class PrismaTrainerRepository implements TrainerRepository {
               createdAt: snapshot.createdAt,
             }
           : null,
+        checkInFrequency: toDomainCheckInFrequency(row.checkInFrequency),
+        lastCheckInAt: row.lastCheckInAt ?? undefined,
+        nextCheckInAt: row.nextCheckInAt ?? undefined,
       }
     })
   }
@@ -183,5 +202,62 @@ export class PrismaTrainerRepository implements TrainerRepository {
       select: { status: true },
     })
     return row?.status === DbRelationshipStatus.ACTIVE
+  }
+
+  async setCheckInFrequency(
+    trainerId: string,
+    studentId: string,
+    frequency: CheckInFrequency
+  ): Promise<void> {
+    const link = await prisma.trainerStudent.findUnique({
+      where: { trainerId_studentId: { trainerId, studentId } },
+      select: { lastCheckInAt: true },
+    })
+
+    // Reschedule from the last check-in if there was one, otherwise from
+    // today — either way `nextCheckInAt` reflects the newly chosen cadence immediately.
+    const nextCheckInAt = calculateNextCheckInDate(frequency, link?.lastCheckInAt ?? new Date())
+
+    await prisma.trainerStudent.update({
+      where: { trainerId_studentId: { trainerId, studentId } },
+      data: { checkInFrequency: toDbCheckInFrequency(frequency), nextCheckInAt },
+    })
+  }
+
+  async recordCheckInCompleted(studentId: string, submittedAt: Date): Promise<void> {
+    const links = await prisma.trainerStudent.findMany({
+      where: { studentId, status: DbRelationshipStatus.ACTIVE },
+      select: { trainerId: true, checkInFrequency: true },
+    })
+
+    await Promise.all(
+      links.map((link) =>
+        prisma.trainerStudent.update({
+          where: { trainerId_studentId: { trainerId: link.trainerId, studentId } },
+          data: {
+            lastCheckInAt: submittedAt,
+            nextCheckInAt: calculateNextCheckInDate(
+              toDomainCheckInFrequency(link.checkInFrequency),
+              submittedAt
+            ),
+          },
+        })
+      )
+    )
+  }
+
+  async getCheckInScheduleForStudent(studentId: string): Promise<CheckInSchedule | null> {
+    const link = await prisma.trainerStudent.findFirst({
+      where: { studentId, status: DbRelationshipStatus.ACTIVE },
+      orderBy: { startedAt: 'desc' },
+      select: { checkInFrequency: true, lastCheckInAt: true, nextCheckInAt: true },
+    })
+    if (!link) return null
+
+    return {
+      frequency: toDomainCheckInFrequency(link.checkInFrequency),
+      lastCheckInAt: link.lastCheckInAt ?? undefined,
+      nextCheckInAt: link.nextCheckInAt ?? undefined,
+    }
   }
 }

@@ -20,6 +20,18 @@ const goal = (
   startedAt: new Date(date),
 })
 
+const checkIn = (id: string, measurementId: string, date: string, weightKg: number) => ({
+  id,
+  measurementId,
+  weightKg,
+  energyLevel: 4,
+  hungerLevel: 2,
+  sleepQuality: 4,
+  workoutsCompleted: 4,
+  nutritionAdherencePercentage: 85,
+  submittedAt: new Date(date),
+})
+
 describe('buildStudentTimeline', () => {
   it('sorts measurements and goals together, newest first', () => {
     const timeline = buildStudentTimeline(
@@ -53,5 +65,26 @@ describe('buildStudentTimeline', () => {
 
   it('returns an empty timeline for no data', () => {
     expect(buildStudentTimeline([], [])).toEqual([])
+  })
+
+  it('represents a check-in once, not also as its underlying measurement', () => {
+    const timeline = buildStudentTimeline(
+      [measurement('m1', '2026-08-15', 68)],
+      [],
+      [checkIn('c1', 'm1', '2026-08-15', 68)]
+    )
+
+    expect(timeline).toHaveLength(1)
+    expect(timeline[0]).toMatchObject({ id: 'check-in-c1', kind: 'check_in', weightKg: 68 })
+  })
+
+  it('lists a plain measurement alongside a separate check-in', () => {
+    const timeline = buildStudentTimeline(
+      [measurement('m1', '2026-08-01', 70), measurement('m2', '2026-08-15', 68)],
+      [],
+      [checkIn('c1', 'm2', '2026-08-15', 68)]
+    )
+
+    expect(timeline.map((e) => e.id)).toEqual(['check-in-c1', 'measurement-m1'])
   })
 })

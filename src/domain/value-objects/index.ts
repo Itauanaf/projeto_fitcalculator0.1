@@ -1,5 +1,6 @@
 export * from './activity-level'
 export * from './calculation-type'
+export * from './check-in-frequency'
 export * from './goal'
 export * from './goal-status'
 export * from './invitation-status'

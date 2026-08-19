@@ -105,6 +105,17 @@ test('inviting a student, accepting the invite and seeing it reflected on both d
   ).toBeVisible()
   await expect(page.getByText('Este aluno ainda não completou o perfil de saúde.')).toBeVisible()
   await expect(page.getByText('Este aluno ainda não definiu um objetivo.')).toBeVisible()
+
+  // Accepting an invite seeds a default weekly check-in schedule — a
+  // trainer shouldn't have to visit and save the form once just to get one.
+  await expect(page.getByLabel('Frequência')).toHaveValue('weekly')
+  await expect(page.getByText('Próximo check-in:')).toBeVisible()
+
+  await page.getByLabel('Frequência').selectOption('monthly')
+  await page.getByRole('button', { name: 'Salvar' }).click()
+  await page.waitForTimeout(1000)
+  await page.reload()
+  await expect(page.getByLabel('Frequência')).toHaveValue('monthly')
 })
 
 test("a trainer cannot open a student detail page they aren't linked to", async ({ page }) => {

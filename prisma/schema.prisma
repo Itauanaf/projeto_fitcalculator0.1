@@ -101,6 +101,17 @@ enum InvitationStatus {
   @@map("invitation_status")
 }
 
+/// `MANUAL` means the trainer asks for check-ins ad hoc — no schedule
+/// is computed for it, `TrainerStudent.nextCheckInAt` stays null.
+enum CheckInFrequency {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  MANUAL
+
+  @@map("check_in_frequency")
+}
+
 // ---------------------------------------------------------------------------
 // Identity
 // ---------------------------------------------------------------------------
@@ -154,6 +165,7 @@ model StudentProfile {
   goals           Goal[]
   healthSnapshots HealthSnapshot[]
   trainers        TrainerStudent[]
+  checkIns        StudentCheckIn[]
 
   @@map("student_profiles")
 }
@@ -175,6 +187,12 @@ model TrainerStudent {
 
   startedAt DateTime? @map("started_at")
   endedAt   DateTime? @map("ended_at")
+
+  /// How often the trainer expects this student to check in, and the
+  /// schedule computed from it — see `domain/calculations/check-in-schedule`.
+  checkInFrequency CheckInFrequency @default(WEEKLY) @map("check_in_frequency")
+  lastCheckInAt    DateTime?        @map("last_check_in_at")
+  nextCheckInAt    DateTime?        @map("next_check_in_at")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -260,9 +278,42 @@ model BodyMeasurement {
 
   student   StudentProfile   @relation(fields: [studentId], references: [userId], onDelete: Cascade)
   snapshots HealthSnapshot[]
+  checkIn   StudentCheckIn?
 
   @@index([studentId, recordedAt(sort: Desc)])
   @@map("body_measurements")
+}
+
+/// A student's periodic self-report. Always created together with the
+/// `BodyMeasurement` it references (one write from the student's "fazer
+/// check-in" action) — see doc section 33's flow. The subjective fields
+/// are the student's own record; nothing in the calculation engine
+/// reads them.
+model StudentCheckIn {
+  id String @id @default(uuid()) @db.Uuid
+
+  studentId     String @map("student_id") @db.Uuid
+  measurementId String @unique @map("measurement_id") @db.Uuid
+
+  /// 1 (worst) to 5 (best).
+  energyLevel  Int @map("energy_level")
+  hungerLevel  Int @map("hunger_level")
+  sleepQuality Int @map("sleep_quality")
+
+  workoutsCompleted            Int @map("workouts_completed")
+  /// 0-100.
+  nutritionAdherencePercentage Int @map("nutrition_adherence_percentage")
+
+  notes String?
+
+  submittedAt DateTime @default(now()) @map("submitted_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  student     StudentProfile  @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  measurement BodyMeasurement @relation(fields: [measurementId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, submittedAt(sort: Desc)])
+  @@map("student_check_ins")
 }
 
 model Goal {

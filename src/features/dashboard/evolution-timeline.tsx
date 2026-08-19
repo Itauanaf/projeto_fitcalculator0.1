@@ -39,6 +39,16 @@ function describeEntry(entry: TimelineEntry): string {
       : `Objetivo alterado — ${GOAL_LABELS[entry.previousGoalType]} → ${label}`
   }
 
+  if (entry.kind === 'check_in') {
+    const details = [
+      `Peso: ${formatKg(entry.weightKg!)}`,
+      `Energia ${entry.energyLevel}/5`,
+      `Sono ${entry.sleepQuality}/5`,
+      `Aderência ${entry.nutritionAdherencePercentage}%`,
+    ]
+    return `Novo check-in — ${details.join(' · ')}`
+  }
+
   const details = [
     `Peso: ${formatKg(entry.weightKg!)}`,
     entry.bodyFatPercentage !== undefined &&

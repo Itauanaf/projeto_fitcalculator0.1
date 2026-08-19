@@ -5,6 +5,8 @@ import { getCurrentProfile } from '@/application/authorization/get-current-profi
 import { Avatar } from '@/components/ui'
 import { LogoutButton } from '@/features/auth/logout-button'
 import {
+  CheckInForm,
+  CheckInPendingBanner,
   EvolutionTimeline,
   GoalForm,
   GoalProgressCard,
@@ -49,14 +51,20 @@ export default async function StudentDashboardPage() {
         <HealthProfileForm isOnboarding />
       ) : (
         <>
+          <CheckInPendingBanner status={dashboard.checkInStatus} />
+
           <MetricsSummary snapshot={dashboard.latestSnapshot} />
 
           <GoalProgressCard goal={dashboard.activeGoal} currentWeightKg={currentWeightKg} />
 
           <WeightEvolutionChart measurements={dashboard.measurements} />
 
+          <CheckInForm />
+
           <div className="flex flex-col gap-4">
-            <h2 className="text-xs font-semibold tracking-wide text-text-muted uppercase">Ações</h2>
+            <h2 className="text-xs font-semibold tracking-wide text-text-muted uppercase">
+              Outras ações
+            </h2>
             <div className="grid gap-6 lg:grid-cols-2">
               <MeasurementForm />
               <GoalForm
@@ -77,7 +85,11 @@ export default async function StudentDashboardPage() {
           <MeasurementHistory measurements={dashboard.measurements} />
 
           <EvolutionTimeline
-            entries={buildStudentTimeline(dashboard.measurements, dashboard.goals)}
+            entries={buildStudentTimeline(
+              dashboard.measurements,
+              dashboard.goals,
+              dashboard.checkIns
+            )}
           />
 
           <details className="group">
