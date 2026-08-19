@@ -5,6 +5,7 @@ import { assertRole } from '@/application/authorization/assert-role'
 import { getCurrentProfile } from '@/application/authorization/get-current-profile'
 import { calculateAge } from '@/domain/entities/student-profile'
 import { PrismaStudentHealthRepository } from '@/infrastructure/database/prisma/repositories/prisma-student-health.repository'
+import { emptyToUndefined } from '@/lib/forms'
 import { studentGoalSchema, type StudentGoalFormInput } from '@/schemas/student-goal.schema'
 import { recordSnapshot } from './record-snapshot'
 
@@ -29,9 +30,13 @@ export async function setGoal(input: StudentGoalFormInput): Promise<SetGoalResul
 
   const repo = new PrismaStudentHealthRepository()
 
+  const targetDate = emptyToUndefined(parsed.data.targetDate)
+
   const goal = await repo.setGoal(profile.id, {
     type: parsed.data.type,
     targetWeightKg: parsed.data.targetWeightKg,
+    // Bare `YYYY-MM-DD` parses as UTC midnight — see the same note on `birthDate`.
+    targetDate: targetDate ? new Date(targetDate) : undefined,
     calorieAdjustmentPercent: parsed.data.calorieAdjustmentPercent,
     createdBy: profile.id,
   })

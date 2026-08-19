@@ -4,6 +4,7 @@ import type { Goal } from '@/domain/value-objects/goal'
 import type { InvitationStatus } from '@/domain/value-objects/invitation-status'
 import type { MacroStrategy } from '@/domain/value-objects/macro-strategy'
 import type { Sex } from '@/domain/value-objects/sex'
+import type { BadgeTone } from '@/components/ui/badge'
 
 /**
  * Portuguese display labels for the domain's enum-like value objects.
@@ -25,9 +26,10 @@ export const ACTIVITY_LEVEL_LABELS: Record<ActivityLevel, string> = {
 }
 
 export const GOAL_LABELS: Record<Goal, string> = {
-  lose_weight: 'Perder peso',
-  maintain: 'Manter peso',
-  gain_weight: 'Ganhar peso',
+  lose_weight: 'Emagrecimento',
+  maintain: 'Manutenção de peso',
+  gain_weight: 'Ganho de peso',
+  gain_muscle: 'Ganho de massa',
 }
 
 export const MACRO_STRATEGY_LABELS: Record<MacroStrategy, string> = {
@@ -52,4 +54,21 @@ export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
   accepted: 'Aceito',
   expired: 'Expirado',
   cancelled: 'Cancelado',
+}
+
+/** Not a medical severity scale — just enough visual distinction to scan a list at a glance. */
+export const BMI_CLASSIFICATION_TONE: Record<BmiClassification, BadgeTone> = {
+  underweight: 'warning',
+  normal: 'success',
+  overweight: 'warning',
+  obese_class_1: 'danger',
+  obese_class_2: 'danger',
+  obese_class_3: 'danger',
+}
+
+export const INVITATION_STATUS_TONE: Record<InvitationStatus, BadgeTone> = {
+  pending: 'warning',
+  accepted: 'success',
+  expired: 'neutral',
+  cancelled: 'neutral',
 }

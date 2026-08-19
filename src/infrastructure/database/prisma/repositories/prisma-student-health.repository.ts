@@ -7,6 +7,7 @@ import type { Sex } from '@/domain/value-objects/sex'
 import {
   ActivityLevel as DbActivityLevel,
   BmrSex as DbBmrSex,
+  type Goal as DbGoalRow,
   GoalStatus as DbGoalStatus,
   GoalType as DbGoalType,
   MacroStrategy as DbMacroStrategy,
@@ -30,6 +31,20 @@ const toDbActivityLevel = (level: ActivityLevel): DbActivityLevel =>
   level.toUpperCase() as DbActivityLevel
 const toDbMacroStrategy = (strategy: MacroStrategy): DbMacroStrategy =>
   strategy.toUpperCase() as DbMacroStrategy
+
+function toGoalRecord(row: DbGoalRow): StudentGoalRecord {
+  return {
+    id: row.id,
+    type: toDomainGoalType(row.type),
+    initialWeightKg: row.initialWeightKg?.toNumber(),
+    targetWeightKg: row.targetWeightKg?.toNumber(),
+    targetDate: row.targetDate ?? undefined,
+    calorieAdjustmentPercent: row.calorieAdjustmentPercent.toNumber(),
+    status: row.status.toLowerCase() as GoalStatus,
+    startedAt: row.startedAt,
+    endedAt: row.endedAt ?? undefined,
+  }
+}
 
 export class PrismaStudentHealthRepository implements StudentHealthRepository {
   async ensureStudentProfile(studentId: string): Promise<void> {
@@ -145,16 +160,15 @@ export class PrismaStudentHealthRepository implements StudentHealthRepository {
       where: { studentId, status: DbGoalStatus.ACTIVE },
       orderBy: { startedAt: 'desc' },
     })
-    if (!row) return null
+    return row ? toGoalRecord(row) : null
+  }
 
-    return {
-      id: row.id,
-      type: toDomainGoalType(row.type),
-      targetWeightKg: row.targetWeightKg?.toNumber(),
-      calorieAdjustmentPercent: row.calorieAdjustmentPercent.toNumber(),
-      status: row.status.toLowerCase() as GoalStatus,
-      startedAt: row.startedAt,
-    }
+  async listGoals(studentId: string): Promise<StudentGoalRecord[]> {
+    const rows = await prisma.goal.findMany({
+      where: { studentId },
+      orderBy: { startedAt: 'desc' },
+    })
+    return rows.map(toGoalRecord)
   }
 
   async setGoal(
@@ -162,10 +176,20 @@ export class PrismaStudentHealthRepository implements StudentHealthRepository {
     input: {
       type: Goal
       targetWeightKg?: number
+      targetDate?: Date
       calorieAdjustmentPercent: number
       createdBy: string
     }
   ): Promise<StudentGoalRecord> {
+    // Not part of the transaction below — a tiny race with a
+    // simultaneous new measurement is an acceptable trade-off for
+    // avoiding an interactive transaction here.
+    const latestMeasurement = await prisma.bodyMeasurement.findFirst({
+      where: { studentId },
+      orderBy: { recordedAt: 'desc' },
+      select: { weightKg: true },
+    })
+
     const [, created] = await prisma.$transaction([
       // Ending the previous goal is a status change, not a delete — its
       // history stays queryable (doc principle: never overwrite, never delete).
@@ -177,7 +201,9 @@ export class PrismaStudentHealthRepository implements StudentHealthRepository {
         data: {
           studentId,
           type: toDbGoalType(input.type),
+          initialWeightKg: latestMeasurement?.weightKg,
           targetWeightKg: input.targetWeightKg,
+          targetDate: input.targetDate,
           calorieAdjustmentPercent: input.calorieAdjustmentPercent,
           status: DbGoalStatus.ACTIVE,
           createdBy: input.createdBy,
@@ -185,14 +211,7 @@ export class PrismaStudentHealthRepository implements StudentHealthRepository {
       }),
     ])
 
-    return {
-      id: created.id,
-      type: toDomainGoalType(created.type),
-      targetWeightKg: created.targetWeightKg?.toNumber(),
-      calorieAdjustmentPercent: created.calorieAdjustmentPercent.toNumber(),
-      status: created.status.toLowerCase() as GoalStatus,
-      startedAt: created.startedAt,
-    }
+    return toGoalRecord(created)
   }
 
   async getLatestSnapshot(studentId: string): Promise<StudentSnapshotRecord | null> {

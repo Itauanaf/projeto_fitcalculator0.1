@@ -1,11 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { PlusCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { logMeasurement } from '@/application/students/log-measurement'
-import { Button, Card, NumberField } from '@/components/ui'
+import { Button, Card, NumberField, SectionHeader } from '@/components/ui'
 import { asOptionalNumber } from '@/lib/forms'
 import {
   studentMeasurementSchema,
@@ -37,12 +38,11 @@ export function MeasurementForm() {
 
   return (
     <Card className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-text-primary">Registrar medição</h2>
-        <p className="text-sm text-text-secondary">
-          Cada peso registrado gera um novo cálculo — o histórico nunca é sobrescrito.
-        </p>
-      </div>
+      <SectionHeader
+        icon={PlusCircle}
+        title="Registrar medição"
+        subtitle="Cada peso registrado gera um novo cálculo — o histórico nunca é sobrescrito."
+      />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <div className="grid gap-5 sm:grid-cols-3">

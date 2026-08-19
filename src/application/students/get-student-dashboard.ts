@@ -7,6 +7,9 @@ import type {
   StudentSnapshotRecord,
 } from '@/infrastructure/repositories/student-health-repository'
 
+/** High enough to cover a year of weekly check-ins with headroom — the evolution chart's "1 ano"/"tudo" periods need more than the default history-list cap. */
+const MEASUREMENT_HISTORY_LIMIT = 365
+
 export interface StudentDashboardData {
   /** False until both the birth date and health profile have been saved at least once. */
   onboarded: boolean
@@ -14,6 +17,7 @@ export interface StudentDashboardData {
   age?: number
   healthProfile?: StudentHealthProfileRecord
   measurements: StudentMeasurementRecord[]
+  goals: StudentGoalRecord[]
   activeGoal: StudentGoalRecord | null
   latestSnapshot: StudentSnapshotRecord | null
 }
@@ -21,18 +25,20 @@ export interface StudentDashboardData {
 /**
  * Everything the student dashboard needs to render, loaded in one call
  * so the page component stays a straightforward "load, then render"
- * without orchestrating five repository calls itself.
+ * without orchestrating repository calls itself.
  */
 export async function getStudentDashboard(studentId: string): Promise<StudentDashboardData> {
   const repo = new PrismaStudentHealthRepository()
 
-  const [birthDate, healthProfile, measurements, activeGoal, latestSnapshot] = await Promise.all([
-    repo.getBirthDate(studentId),
-    repo.getHealthProfile(studentId),
-    repo.listMeasurements(studentId),
-    repo.getActiveGoal(studentId),
-    repo.getLatestSnapshot(studentId),
-  ])
+  const [birthDate, healthProfile, measurements, goals, activeGoal, latestSnapshot] =
+    await Promise.all([
+      repo.getBirthDate(studentId),
+      repo.getHealthProfile(studentId),
+      repo.listMeasurements(studentId, MEASUREMENT_HISTORY_LIMIT),
+      repo.listGoals(studentId),
+      repo.getActiveGoal(studentId),
+      repo.getLatestSnapshot(studentId),
+    ])
 
   return {
     onboarded: birthDate !== null && healthProfile !== null,
@@ -40,6 +46,7 @@ export async function getStudentDashboard(studentId: string): Promise<StudentDas
     age: birthDate ? calculateAge(birthDate) : undefined,
     healthProfile: healthProfile ?? undefined,
     measurements,
+    goals,
     activeGoal,
     latestSnapshot,
   }

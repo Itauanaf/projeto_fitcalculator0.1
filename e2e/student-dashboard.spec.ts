@@ -68,8 +68,9 @@ test('completing the profile, logging a measurement and setting a goal produces 
   await page.getByLabel('Peso (kg)').fill(String(WEIGHT_KG))
   await page.getByRole('button', { name: 'Registrar medição' }).click()
 
-  // BMI = 80 / 1.80² = 24.69, independent of age/activity/goal.
-  await expect(page.getByText('24,69')).toBeVisible()
+  // BMI = 80 / 1.80² = 24.69, independent of age/activity/goal. Shown twice
+  // (the KPI tile and the BMI gauge card both display it).
+  await expect(page.getByText('24,69')).toHaveCount(2)
   await expect(page.getByText(formatKcal(bmr))).toBeVisible()
   // No goal set yet, so the calorie target defaults to maintenance (== TDEE)
   // — the two stats coincide and the formatted value appears twice.
@@ -81,12 +82,50 @@ test('completing the profile, logging a measurement and setting a goal produces 
   await page.getByLabel('Objetivo').selectOption('lose_weight')
   await page.getByRole('button', { name: 'Salvar objetivo' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Alterar objetivo' })).toBeVisible()
+  // `setGoal` now does one more sequential DB round trip than a plain
+  // save (reading the latest measurement to capture `initialWeightKg`).
+  await expect(page.getByRole('heading', { name: 'Alterar objetivo' })).toBeVisible({
+    timeout: 15000,
+  })
   await expect(page.getByText(formatKcal(calorieTargetLoseWeight))).toBeVisible()
   await expect(page.getByText(formatKcal(tdee))).toBeVisible()
 
-  // The measurement history and health-profile edit form both reflect what was saved.
-  await expect(page.getByText('80,0kg')).toBeVisible()
+  // The measurement history and health-profile edit form both reflect what was
+  // saved. `{ exact: true }` — the timeline's "Nova medição — Peso: 80,0kg" entry also contains this text.
+  await expect(page.getByText('80,0kg', { exact: true })).toBeVisible()
   await page.getByText('Editar perfil de saúde').click()
   await expect(page.getByLabel('Data de nascimento')).toHaveValue('1990-01-01')
+
+  // Without a target weight yet, there's nothing to show progress toward.
+  await expect(page.getByText('Peso inicial')).toHaveCount(0)
+
+  // Adding a target weight + deadline captures `initialWeightKg` from the
+  // measurement already on file (80kg) and starts the progress card.
+  await page.getByLabel('Peso alvo').fill('75')
+  await page.getByLabel('Prazo').fill('2027-01-01')
+  await page.getByRole('button', { name: 'Salvar objetivo' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Meta: Emagrecimento' })).toBeVisible({
+    timeout: 15000,
+  })
+  await expect(page.getByText('0% concluído')).toBeVisible()
+
+  // Logging a second, lower weight advances progress: (80-78)/(80-75) = 40%.
+  await page.getByLabel('Peso (kg)').fill('78')
+  await page.getByRole('button', { name: 'Registrar medição' }).click()
+
+  await expect(page.getByText('40% concluído')).toBeVisible({ timeout: 15000 })
+  await expect(page.getByText('-2,0kg desde o início.')).toBeVisible()
+
+  // The evolution chart and timeline both reflect the same two measurements.
+  // (`-2,0kg` legitimately appears more than once — the chart's "Diferença"
+  // stat and the measurement history's inline trend badge both show it.)
+  await expect(page.getByRole('heading', { name: 'Evolução do peso' })).toBeVisible()
+  await expect(page.getByText('-2,0kg', { exact: true }).first()).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Timeline de evolução' })).toBeVisible()
+  await expect(page.getByText('Nova medição — Peso: 78,0kg')).toBeVisible()
+  await expect(page.getByText('Objetivo atualizado — Emagrecimento')).toBeVisible()
+
+  // The target date round-trips through the goal form correctly (UTC-anchored, no off-by-one).
+  await expect(page.getByLabel('Prazo')).toHaveValue('2027-01-01')
 })

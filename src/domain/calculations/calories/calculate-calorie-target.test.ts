@@ -72,5 +72,6 @@ describe('DEFAULT_ADJUSTMENT_PERCENTAGE', () => {
     expect(DEFAULT_ADJUSTMENT_PERCENTAGE.lose_weight).toBeLessThan(0)
     expect(DEFAULT_ADJUSTMENT_PERCENTAGE.maintain).toBe(0)
     expect(DEFAULT_ADJUSTMENT_PERCENTAGE.gain_weight).toBeGreaterThan(0)
+    expect(DEFAULT_ADJUSTMENT_PERCENTAGE.gain_muscle).toBeGreaterThan(0)
   })
 })

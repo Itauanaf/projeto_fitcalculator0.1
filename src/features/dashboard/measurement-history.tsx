@@ -1,5 +1,8 @@
-import { Card } from '@/components/ui'
+import { History } from 'lucide-react'
+import { Sparkline } from '@/components/charts'
+import { Card, SectionHeader } from '@/components/ui'
 import type { StudentMeasurementRecord } from '@/infrastructure/repositories/student-health-repository'
+import { cn } from '@/lib/cn'
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -19,9 +22,33 @@ export function MeasurementHistory({ measurements }: MeasurementHistoryProps) {
     return null
   }
 
+  // `measurements` arrives newest-first; the trend line reads left-to-right, oldest-first.
+  const weightTrend = [...measurements].reverse().map((m) => m.weightKg)
+  const firstWeight = weightTrend[0]
+  const lastWeight = weightTrend[weightTrend.length - 1]
+  const delta = lastWeight - firstWeight
+
   return (
-    <Card className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold text-text-primary">Histórico de medições</h2>
+    <Card className="flex flex-col gap-5">
+      <SectionHeader icon={History} title="Histórico de medições" />
+
+      {weightTrend.length >= 2 && (
+        <div className="flex items-center gap-4 rounded-2xl bg-surface-soft p-4">
+          <Sparkline points={weightTrend} width={140} height={40} />
+          <div>
+            <span className="text-xs text-text-secondary">Desde a primeira medição</span>
+            <p
+              className={cn(
+                'text-lg font-semibold',
+                delta < 0 ? 'text-emerald-600' : 'text-text-primary'
+              )}
+            >
+              {delta === 0 ? 'Sem variação' : `${delta > 0 ? '+' : ''}${formatKg(delta)}`}
+            </p>
+          </div>
+        </div>
+      )}
+
       <ul className="flex flex-col divide-y divide-border">
         {measurements.map((measurement) => (
           <li

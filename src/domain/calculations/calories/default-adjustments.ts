@@ -11,4 +11,6 @@ export const DEFAULT_ADJUSTMENT_PERCENTAGE: Record<Goal, number> = {
   lose_weight: -20,
   maintain: 0,
   gain_weight: 15,
+  // A leaner surplus than generic weight gain — the common "lean bulk" convention.
+  gain_muscle: 10,
 }

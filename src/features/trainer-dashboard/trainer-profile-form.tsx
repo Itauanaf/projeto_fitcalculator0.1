@@ -1,11 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { UserRound } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { saveTrainerProfile } from '@/application/trainers/save-trainer-profile'
-import { Button, Card, TextareaField, TextField } from '@/components/ui'
+import { Button, Card, SectionHeader, TextareaField, TextField } from '@/components/ui'
 import {
   trainerProfileSchema,
   type TrainerProfileFormInput,
@@ -45,12 +46,11 @@ export function TrainerProfileForm({ initialValues }: TrainerProfileFormProps) {
   return (
     <Card>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-text-primary">Seu perfil</h2>
-          <p className="text-sm text-text-secondary">
-            Opcional — aparece para os alunos que você convidar.
-          </p>
-        </div>
+        <SectionHeader
+          icon={UserRound}
+          title="Seu perfil"
+          subtitle="Opcional — aparece para os alunos que você convidar."
+        />
 
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField label="Telefone" error={errors.phone} registration={register('phone')} />

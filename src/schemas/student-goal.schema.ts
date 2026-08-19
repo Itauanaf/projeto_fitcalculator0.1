@@ -19,6 +19,10 @@ export const studentGoalSchema = z.object({
     .min(MIN_WEIGHT_KG, `O peso mínimo é ${MIN_WEIGHT_KG}kg`)
     .max(MAX_WEIGHT_KG, `O peso máximo é ${MAX_WEIGHT_KG}kg`)
     .optional(),
+  /** Informational only — nothing in the calculation engine reads it. */
+  targetDate: z
+    .union([z.iso.date({ message: 'Informe uma data válida' }), z.literal('')])
+    .optional(),
   calorieAdjustmentPercent: z
     .number()
     .min(MIN_CALORIE_ADJUSTMENT_PERCENT, `O ajuste mínimo é ${MIN_CALORIE_ADJUSTMENT_PERCENT}%`)

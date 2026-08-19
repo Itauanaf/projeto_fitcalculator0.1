@@ -176,4 +176,12 @@ export class PrismaTrainerRepository implements TrainerRepository {
       }
     })
   }
+
+  async isActivelyLinked(trainerId: string, studentId: string): Promise<boolean> {
+    const row = await prisma.trainerStudent.findUnique({
+      where: { trainerId_studentId: { trainerId, studentId } },
+      select: { status: true },
+    })
+    return row?.status === DbRelationshipStatus.ACTIVE
+  }
 }

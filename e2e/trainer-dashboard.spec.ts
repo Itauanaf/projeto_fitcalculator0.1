@@ -92,7 +92,36 @@ test('inviting a student, accepting the invite and seeing it reflected on both d
   await login(page, trainerEmail)
   await expect(page).toHaveURL('/app/personal')
   await expect(page.getByText('Aluno Convidado E2E')).toBeVisible()
-  await expect(page.getByText('Aceito')).toBeVisible()
+  // `{ exact: true }` — the "Convites aceitos" stat-card label would otherwise also match.
+  await expect(page.getByText('Aceito', { exact: true })).toBeVisible()
+
+  // Clicking the student opens their detail page, showing the same
+  // "no measurement yet" nudge their own dashboard would show.
+  await page.getByText('Aluno Convidado E2E').click()
+  await expect(page).toHaveURL(/\/app\/personal\/alunos\/.+/)
+  await expect(page.getByRole('heading', { name: 'Aluno Convidado E2E' })).toBeVisible()
+  await expect(
+    page.getByText('Registre sua primeira medição abaixo para ver seu IMC, TDEE e macros.')
+  ).toBeVisible()
+  await expect(page.getByText('Este aluno ainda não completou o perfil de saúde.')).toBeVisible()
+  await expect(page.getByText('Este aluno ainda não definiu um objetivo.')).toBeVisible()
+})
+
+test("a trainer cannot open a student detail page they aren't linked to", async ({ page }) => {
+  await login(page, trainerEmail)
+  await expect(page).toHaveURL('/app/personal')
+
+  // `otherStudentEmail` was never invited/linked to this trainer.
+  await page.goto('/app/personal/alunos/00000000-0000-0000-0000-000000000000')
+  await expect(page).toHaveURL('/app/personal')
+})
+
+test('a student cannot open the trainer-only student-detail route', async ({ page }) => {
+  await login(page, otherStudentEmail)
+  await expect(page).toHaveURL('/app/aluno')
+
+  await page.goto('/app/personal/alunos/00000000-0000-0000-0000-000000000000')
+  await expect(page).toHaveURL('/app/aluno')
 })
 
 test('a signed-out visitor hitting an invite link is sent to /login and back', async ({ page }) => {

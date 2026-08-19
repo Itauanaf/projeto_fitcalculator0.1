@@ -36,7 +36,7 @@ describe('ACTIVITY_LEVEL_VALUES', () => {
 
 describe('GOAL_VALUES', () => {
   it('has the exact values the calorie target step branches on', () => {
-    expect(GOAL_VALUES).toEqual(['lose_weight', 'maintain', 'gain_weight'])
+    expect(GOAL_VALUES).toEqual(['lose_weight', 'maintain', 'gain_weight', 'gain_muscle'])
   })
 })
 

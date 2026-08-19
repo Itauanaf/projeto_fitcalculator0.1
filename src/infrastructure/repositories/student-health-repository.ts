@@ -32,10 +32,14 @@ export interface StudentMeasurementRecord {
 export interface StudentGoalRecord {
   id: string
   type: Goal
+  /** Captured automatically from the latest measurement when the goal was created — see `calculateGoalProgress`. */
+  initialWeightKg?: number
   targetWeightKg?: number
+  targetDate?: Date
   calorieAdjustmentPercent: number
   status: GoalStatus
   startedAt: Date
+  endedAt?: Date
 }
 
 export interface StudentSnapshotRecord {
@@ -103,12 +107,20 @@ export interface StudentHealthRepository {
   ): Promise<StudentMeasurementRecord>
 
   getActiveGoal(studentId: string): Promise<StudentGoalRecord | null>
-  /** Ends any currently active goal (status → `cancelled`) and inserts the new one as `active`. */
+  /** Every goal this student has ever had, newest first — the timeline reads "objetivo alterado" entries from this. */
+  listGoals(studentId: string): Promise<StudentGoalRecord[]>
+  /**
+   * Ends any currently active goal (status → `cancelled`) and inserts
+   * the new one as `active`. `initialWeightKg` is not a caller input —
+   * the implementation captures it from the student's latest
+   * measurement at creation time.
+   */
   setGoal(
     studentId: string,
     input: {
       type: Goal
       targetWeightKg?: number
+      targetDate?: Date
       calorieAdjustmentPercent: number
       createdBy: string
     }

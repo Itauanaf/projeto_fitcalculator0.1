@@ -1,7 +1,9 @@
+import { CheckCircle2, Clock, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import { assertRole } from '@/application/authorization/assert-role'
 import { getCurrentProfile } from '@/application/authorization/get-current-profile'
 import { getTrainerDashboard } from '@/application/trainers/get-trainer-dashboard'
+import { Avatar, StatCard } from '@/components/ui'
 import { LogoutButton } from '@/features/auth/logout-button'
 import {
   InvitationsList,
@@ -19,19 +21,36 @@ export default async function TrainerDashboardPage() {
   assertRole(profile, ['trainer', 'admin'])
 
   const dashboard = await getTrainerDashboard(profile.id)
+  const pendingInvitations = dashboard.invitations.filter((i) => i.status === 'pending').length
+  const acceptedInvitations = dashboard.invitations.filter((i) => i.status === 'accepted').length
 
   return (
     <main
       id="main-content"
       tabIndex={-1}
-      className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-12 outline-none"
+      className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-12 outline-none"
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Bom dia, {profile.fullName}</h1>
-          <p className="text-text-secondary">Veja como estão seus alunos.</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Avatar name={profile.fullName} size="lg" />
+          <div>
+            <h1 className="text-2xl font-semibold text-text-primary">
+              Bom dia, {profile.fullName}
+            </h1>
+            <p className="text-text-secondary">Veja como estão seus alunos.</p>
+          </div>
         </div>
         <LogoutButton />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard icon={Users} label="Alunos ativos" value={String(dashboard.students.length)} />
+        <StatCard icon={Clock} label="Convites pendentes" value={String(pendingInvitations)} />
+        <StatCard
+          icon={CheckCircle2}
+          label="Convites aceitos"
+          value={String(acceptedInvitations)}
+        />
       </div>
 
       <InviteStudentForm />

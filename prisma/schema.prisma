@@ -69,6 +69,7 @@ enum GoalType {
   LOSE_WEIGHT
   MAINTAIN
   GAIN_WEIGHT
+  GAIN_MUSCLE
 
   @@map("goal_type")
 }
@@ -134,7 +135,7 @@ model TrainerProfile {
 }
 
 model StudentProfile {
-  userId String @id @map("user_id") @db.Uuid
+  userId    String    @id @map("user_id") @db.Uuid
   /// Nullable: a `student_profiles` row can exist before onboarding is
   /// complete — e.g. accepting a trainer's invite creates one with no
   /// birth date yet, since `TrainerStudent.student` FKs into this table
@@ -271,7 +272,15 @@ model Goal {
 
   type GoalType
 
-  targetWeightKg Decimal? @map("target_weight_kg") @db.Decimal(5, 2)
+  /// Captured automatically from the student's latest measurement when
+  /// the goal is created (never user-entered) — the fixed baseline that
+  /// `calculateGoalProgress` measures progress against, even as later
+  /// measurements move `weightKg` around.
+  initialWeightKg Decimal?  @map("initial_weight_kg") @db.Decimal(5, 2)
+  targetWeightKg  Decimal?  @map("target_weight_kg") @db.Decimal(5, 2)
+  /// Optional deadline the student is aiming for — informational only,
+  /// nothing in the calculation engine reads it.
+  targetDate      DateTime? @map("target_date") @db.Date
 
   /// Signed percentage applied to TDEE — negative for a deficit, positive
   /// for a surplus. Always explicit, never a constant baked into a formula

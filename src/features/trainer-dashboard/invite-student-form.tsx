@@ -1,11 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { UserPlus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { inviteStudent } from '@/application/trainers/invite-student'
-import { Button, Card, TextField } from '@/components/ui'
+import { Button, Card, SectionHeader, TextField } from '@/components/ui'
 import { inviteStudentSchema, type InviteStudentFormInput } from '@/schemas/invite-student.schema'
 
 /**
@@ -48,12 +49,11 @@ export function InviteStudentForm() {
 
   return (
     <Card className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-text-primary">Convidar aluno</h2>
-        <p className="text-sm text-text-secondary">
-          Gera um link de convite — envie você mesmo por WhatsApp, e-mail etc.
-        </p>
-      </div>
+      <SectionHeader
+        icon={UserPlus}
+        title="Convidar aluno"
+        subtitle="Gera um link de convite — envie você mesmo por WhatsApp, e-mail etc."
+      />
 
       <form
         onSubmit={handleSubmit(onSubmit)}

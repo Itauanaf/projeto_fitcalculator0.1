@@ -56,4 +56,7 @@ export interface TrainerRepository {
   acceptInvitation(invitationId: string, trainerId: string, studentId: string): Promise<void>
 
   listActiveStudents(trainerId: string): Promise<LinkedStudentRecord[]>
+
+  /** Whether this trainer has an active link to this student — the only relationship that grants access to their data. */
+  isActivelyLinked(trainerId: string, studentId: string): Promise<boolean>
 }
